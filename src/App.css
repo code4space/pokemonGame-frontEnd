@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+  padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  font-family: 'Press Start 2P'
+}
+
+.pixelated-border {
+  display: block;
+  color: black;
+  border-top: 10px solid black;
+  border-bottom: 10px solid black;
+  position: relative;
+  display: inline-block;
+  text-align: center;
+  box-shadow: 8px 5px 0px rgba(0, 0, 0, 0.9);
+  transition: 0.4s all ease;
+  font-size: 12px;
+}
+
+.pixelated-border::before,
+.pixelated-border::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  background-color: black;
+  transition: 0.4s all ease;
+}
+
+.pixelated-border::before {
+  left: -10px;
+}
+
+.pixelated-border::after {
+  right: -10px;
+}
+
+.pixelated-border-effect:hover::before {
+  background-color: #110a78;
+}
+
+.pixelated-border-effect:hover::after {
+  background-color: #110a78;
+}
+
+.pixelated-border-effect:hover {
+  cursor: pointer;
+  transform: translateY(-7px);
+  color: #110a78;
+  border-top: 10px solid #110a78;
+  border-bottom: 10px solid #110a78;
+}

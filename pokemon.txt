@@ -1,0 +1,10 @@
+BUat game pokemon
+cukup ada attack defense hp = power
+
+punya draw 10x di awal,
+sistemny 5card vs 5card
+my.power > enemy.power ===> win
+win > 3 ==> winner
+dapet draw 1x 
+
+ambil dari "https://pokeapi.co/api/v2/pokemon?limit=10&offset=0"

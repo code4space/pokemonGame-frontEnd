@@ -1,0 +1,110 @@
+.lobby {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('../background/bg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.logoPokemon {
+    max-width: 400px;
+    margin-bottom: 40px;
+}
+
+.button-lobby {
+    width: 200px;
+    padding: 20px;
+    margin: 10px 25px 0 25px;
+    background-color: white;
+    box-shadow: inset 3px 3px 0px rgb(207, 207, 207),
+        inset -3px -3px 0px rgb(130, 130, 130);
+}
+
+.pikachu-gif {
+    position: absolute;
+    bottom: 10vh;
+}
+
+.right-pikachu-position {
+    right: 2vw;
+}
+
+.left-pikachu-position {
+    left: 2vw;
+    transform: scaleX(-1);
+}
+
+.notification {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+
+.button-draw {
+    width: 100px;
+    padding: 10px;
+    margin: 30px 25px 0 25px;
+    background-color: rgb(255, 249, 131);
+}
+
+
+.top-icon {
+    position: absolute;
+    top: 3vh;
+    right: 3vw;
+}
+
+.logout {
+    padding: 5px;
+    color: white;
+    background-color: rgb(246, 66, 75);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.music-icon {
+    color: white;
+    border: 3px solid white;
+    background-color: transparent;
+    cursor: pointer;
+    margin-right: 20px;
+    padding: 5px;
+}
+
+.music-active {
+    background-color: white;
+    color: rgb(121,202,249);
+}
+
+.logout:active {
+    box-shadow: 0px 0px 0 rgba(0, 0, 0, 0.7);
+    transform: translate(2px, 2px);
+}
+
+@media only screen and (max-width: 934px) {
+    .pikachu-gif {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .button-lobby-ctrl {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .button-lobby {
+        margin-bottom: 20px;
+    }
+
+    .logoPokemon {
+        max-width: 300px;
+        margin-bottom: 2px;
+    }
+}

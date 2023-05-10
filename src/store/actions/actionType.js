@@ -1,0 +1,1 @@
+export const POKEMON = 'success_get/pokemon'
