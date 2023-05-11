@@ -13,12 +13,12 @@ export default function HomePage() {
     //redux test
     const dispatch = useDispatch()
     const pokemon = useSelector((state) => {
-        console.log(state.PokemonReducer.pokemon)
         return state.PokemonReducer.pokemon
     })
     useEffect(() => {
         dispatch(getPokemon())
     }, [])
+    console.log(pokemon, 'haha')
 
     //notification
     function notification() {

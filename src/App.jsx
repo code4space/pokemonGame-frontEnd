@@ -1,6 +1,7 @@
 import './App.css'
 import './assets/css/home.css'
 import './assets/css/login.css'
+import './assets/css/collection.css'
 import {RouterProvider} from "react-router-dom"
 import store from './store/store'
 import { Provider } from 'react-redux'
