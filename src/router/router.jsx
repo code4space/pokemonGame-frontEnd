@@ -4,6 +4,7 @@ import LoginPage from "../views/login";
 import PrivateRoute from "../components/privateRoute";
 import CollectionPage from "../views/collection";
 import TopNavbar from "../components/TopNavbar";
+import DrawPage from "../views/draw";
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
                     {
                         path: '/collection',
                         element: <CollectionPage />
+                    },
+                    {
+                        path: '/draw',
+                        element: <DrawPage />
                     },
                 ]
             }

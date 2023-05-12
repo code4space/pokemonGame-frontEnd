@@ -13,16 +13,38 @@
     position: relative;
 }
 
+.paging {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+    animation-name: title-collection;
+    animation-duration: 1.7s;
+}
+
+.paging .logout {
+    background-color: rgb(178, 65, 244);
+}
+
+.paging .logout:active {
+    box-shadow: none;
+}
+
+.paging span {
+    color: white;
+    font-size: 20px;
+    text-shadow: 2px 2px 0 rgb(0, 0, 0), -2px -2px 0 rgb(0, 0, 0), -2px 2px 0 rgb(0, 0, 0), 2px -2px 0 rgb(0, 0, 0);
+}
 
 @keyframes title-collection {
     0% {
         opacity: 0%;
-        bottom: -200px;
+        transform: translateY(200px);
     }
 
     100% {
         opacity: 100%;
-        bottom: 0;
+        transform: translateY(0);
     }
 }
 
@@ -67,17 +89,16 @@
     height: 100%;
     position: absolute;
     background: rgb(255, 255, 255);
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.3) 100%
-    );
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.3) 100%);
     animation-name: shining;
     animation-duration: 4s;
-    animation-delay: 4s; /* Add a delay of 4 seconds */
+    animation-delay: 4s;
+    /* Add a delay of 4 seconds */
     animation-iteration-count: infinite;
-  }
-  
+}
+
 .detail-collection {
     background-color: rgba(0, 0, 0, 0.5);
     width: 100vw;
@@ -90,101 +111,27 @@
     align-items: center;
 }
 
-.card-detail {
-    width: 400px;
-    height: 580px;
-    background-color: white;
-    border-radius: 10px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hiden;
-    position: relative;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-.color-rank {
-    position: absolute;
-    width: 100%;
-    height: 35%;
-    top: 0;
-    left: 0;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    z-index: 9;
-}
-
-.pokemon-img {
-    margin-top: 89px;
-    max-width: 50%;
-    max-height: 50%;
-    background-color: white;
-    z-index: 10;
-    border-radius: 100px;
-    border: 10px solid white;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4);
-}
-
-.card-detail h2,
-.card-detail h3 {
-    z-index: 10;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
-.card-detail h2 {
-    color: rgb(59, 59, 59);
-    margin-top: 10px;
-}
-
-.card-detail h3 {
-    color: rgb(98, 98, 98);
-    font-size: 0.9em;
-    margin-top: 4px;
-}
-
-.stat {
-    margin-top: 30px;
-    display: flex;
-    width: 100%;
-    justify-content: space-around;
-}
-
-.stat span {
-    display: flex;
-    align-items: center;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-weight: bolder;
-    font-size: 19px;
-    color: rgb(60, 60, 60);
-}
-
-.stat img {
-    max-width: 35px;
-    max-width: 35px;
-    margin-right: 5px;
-}
-
-.card-detail p {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    text-align: center;
-    margin-top: 30px;
-    color: rgb(56, 56, 56);
-    font-size: 18px;
-}
-
 @keyframes shining {
     0% {
-      transform: translateX(-100px);
+        transform: translateX(-100px);
     }
-    100% {
-      transform: translateX(100px);
-    }
-  }
 
-@media only screen and (max-width: 500px) {
-    .card-detail {
-        width: 300px;
-        height: 580px;
+    100% {
+        transform: translateX(100px);
+    }
+}
+
+
+@keyframes glow {
+    0% {
+        box-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    }
+
+    50% {
+        box-shadow: -1px -1px 6px #fff, 1px -1px 6px #fff, -1px 1px 6px #fff, 1px 1px 6px #fff;
+    }
+
+    100% {
+        box-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
     }
 }

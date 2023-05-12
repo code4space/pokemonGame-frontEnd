@@ -17,7 +17,8 @@
     "react-router-dom": "^6.11.1",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
-    "typewriter-effect": "^2.19.0"
+    "typewriter-effect": "^2.19.0",
+    "vanilla-tilt": "^1.8.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

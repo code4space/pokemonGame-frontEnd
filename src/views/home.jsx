@@ -1,24 +1,10 @@
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { getPokemon } from "../store/actions/fetchPokemon"
 import logoPokemon from '../assets/logo/logoPokemon.png'
 import pikachu from '../assets/icon/pikachu.gif'
-import { PokemonTheme2, clickSound } from "../components/playSound"
-import { useLocation, useNavigate } from "react-router-dom"
+import { clickSound } from "../components/playSound"
+import { useNavigate } from "react-router-dom"
 
 export default function HomePage() {
     const navigate = useNavigate()
-    const location = useLocation()
-
-    //redux test
-    const dispatch = useDispatch()
-    const pokemon = useSelector((state) => {
-        return state.PokemonReducer.pokemon
-    })
-    useEffect(() => {
-        dispatch(getPokemon())
-    }, [])
-    console.log(pokemon, 'haha')
 
     //notification
     function notification() {
@@ -67,7 +53,7 @@ export default function HomePage() {
                     </div>
                 </div>
 
-                <div className="pixelated-border pixelated-border-effect button-draw" onClick={clickSound}>
+                <div className="pixelated-border pixelated-border-effect button-draw" onClick={() => {Move('/draw')}}>
                     {notification()}
                     Draw
                 </div>

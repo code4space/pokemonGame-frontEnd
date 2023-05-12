@@ -1,0 +1,118 @@
+.draw-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 30px;
+}
+
+.pokeball {
+    background-color: white;
+    width: 100px;
+    height: 490px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pokeball button {
+    width: 70px;
+    margin-top: 20px;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.8);
+    background-color: white;
+}
+
+.pokeball button:active {
+    transform: translate(0px, 4px);
+    box-shadow: inset -2px -2px 0 rgb(80, 80, 80),
+        inset 2px 2px 0 rgb(80, 80, 80);
+}
+
+.pokeball img {
+    max-width: 40px;
+    pointer-events: none;
+}
+
+.pokeball span {
+    color: rgb(70, 70, 70);
+    margin-top: 10px;
+}
+
+.skip {
+    margin-top: 20px;
+    background-color: rgb(181, 0, 139);
+    height: 70px;
+    width: 100px;
+}
+
+.skip:active {
+    box-shadow: none;
+}
+
+.draw-container h1 {
+    font-size: 70px;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    color: #ffff00;
+    -webkit-text-stroke: 2px #110a78;
+    text-shadow: -7px 7px 0 #2854bd;
+    position: absolute;
+    left: 15vw;
+    /* animation: shiny-text 1.5s ease-in-out infinite; */
+}
+
+/* 
+@keyframes shiny-text {
+    20% {
+      text-shadow: -0px -0px 0 #000, 0px -0px 0 #000, -0px 0px 0 #000, 0px 0px 0 #000;
+    }
+    50% {
+      text-shadow: -0px -0px 10px #fff, 1px -1px 10px #fff, -1px 1px 10px #fff, 1px 1px 10px #110a78;
+    }
+    80% {
+      text-shadow: -0px -0px 0 #000, 0px -0px 0 #000, -0px 0px 0 #000, 0px 0px 0 #000;
+    }
+  } */
+
+@media only screen and (max-width: 1000px) {
+    .draw-container {
+        column-gap: 15px;
+    }
+
+    .draw-container .pokeball {
+        width: 70px;
+        height: 360px;
+    }
+
+    .draw-container .pokeball img {
+        max-width: 27px;
+    }
+
+    .draw-container .pokeball button {
+        width: 50px;
+        margin-top: 10px;
+        padding: 10px;
+    }
+
+    .draw-container .pokeball span {
+        font-size: 12px;
+    }
+
+    .draw-container .skip {
+        width: 70px;
+        font-size: 12px;
+    }
+}
+
+@media only screen and (max-width: 740px) {
+    .draw-container h1 {
+        font-size: 40px;
+        writing-mode: inherit;
+        left: calc(50vw - 140px);
+        top: calc(55vh + 225px);
+    }
+}

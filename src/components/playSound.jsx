@@ -1,10 +1,17 @@
+import gameNotification from '../assets/sound/game-notification.wav'
 import clickTone from '../assets/sound/click-tone.wav'
 import pokemonTheme1 from '../assets/sound/pokemon-theme.mp3'
 import pokemonTheme2 from '../assets/sound/pokemon-theme1.mp3'
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect } from 'react'
 
 export const clickSound = () => {
     const audio = new Audio(clickTone)
+    audio.play()
+}
+
+export const gameNotificationSound = () => {
+    const audio = new Audio(gameNotification)
+    audio.volume = 0.4
     audio.play()
 }
 
