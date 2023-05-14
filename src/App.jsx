@@ -4,6 +4,7 @@ import './assets/css/login.css'
 import './assets/css/collection.css'
 import './assets/css/draw.css'
 import './assets/css/cardDetail.css'
+import './assets/css/loading.css'
 import {RouterProvider} from "react-router-dom"
 import store from './store/store'
 import { Provider } from 'react-redux'

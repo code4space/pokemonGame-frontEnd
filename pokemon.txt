@@ -13,6 +13,7 @@ ambil dari "https://pokeapi.co/api/v2/pokemon?limit=10&offset=0"
 get collection(param sort, paging 50 aja)
 get randomPokemon
 post addOnePokemon
+delete onePokemon
 
 contoh pagination di sequelize
 static async getProduct(req, res, next) {

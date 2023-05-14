@@ -6,9 +6,8 @@ import { useEffect, useRef } from 'react'
 import VanillaTilt from 'vanilla-tilt'
 
 export default function CardDetail({ pokemon = {}, cardCtrl = false }) {
-    const { otherImg, name, power, atack, hp, def, summary, baseExp } = pokemon;
+    const { img2, name, power, attack, hp, def, summary, baseExp } = pokemon;
     const cardRef = useRef(null);
-
     useEffect(() => {
         VanillaTilt.init(cardRef.current, {
             max: 5,
@@ -20,12 +19,12 @@ export default function CardDetail({ pokemon = {}, cardCtrl = false }) {
 
     return (
         <div className={cardCtrl? 'card-detail card-ctrl' : 'card-detail'} ref={cardRef}>
-            {otherImg && <img src={otherImg} alt="pokemon_pic" className="pokemon-img" />}
+            {img2 && <img src={img2} alt="pokemon_pic" className="pokemon-img" />}
             <h2>{name}</h2>
             <h3>Power: {power}</h3>
             <div className="stat">
                 <span>
-                    <img src={sword} alt="atk" />: {atack}
+                    <img src={sword} alt="atk" />: {attack}
                 </span>
                 <span>
                     <img src={health} alt="health" />: {hp}
@@ -34,7 +33,7 @@ export default function CardDetail({ pokemon = {}, cardCtrl = false }) {
                     <img src={shield} alt="def" />: {def}
                 </span>
             </div>
-            <p>{summary?.replace('\f', ' ')}</p>
+            <p>{summary}</p>
             <div className="color-rank" style={{ backgroundColor: setColor(baseExp) }}></div>
         </div>
     );

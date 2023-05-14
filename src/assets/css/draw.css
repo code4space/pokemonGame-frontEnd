@@ -112,7 +112,7 @@
     .draw-container h1 {
         font-size: 40px;
         writing-mode: inherit;
-        left: calc(50vw - 140px);
+        left: calc(50vw - 150px);
         top: calc(55vh + 225px);
     }
 }

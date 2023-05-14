@@ -7,6 +7,10 @@
   font-family: 'Press Start 2P'
 }
 
+.swal2-container h2, .swal2-container div, .swal2-container button {
+  font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif;;
+}
+
 .pixelated-border {
   display: block;
   color: black;
