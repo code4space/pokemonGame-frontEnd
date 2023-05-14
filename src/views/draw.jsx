@@ -112,6 +112,7 @@ export default function DrawPage() {
 
     function get(ballType, pokemon) {
         gameNotificationSound()
+        if (draw < 1) return ''
         const randomNum = Math.random() * 100;
         const baseExp = pokemon.baseExp
         setIsLoading(true)
