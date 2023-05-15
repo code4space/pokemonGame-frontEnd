@@ -24,12 +24,32 @@
     cursor: pointer;
     box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.8);
     background-color: white;
+    position: relative;
 }
 
 .pokeball button:active {
     transform: translate(0px, 4px);
     box-shadow: inset -2px -2px 0 rgb(80, 80, 80),
         inset 2px 2px 0 rgb(80, 80, 80);
+}
+
+.pokeball button h3 {
+    position: absolute;
+    left: 100px;
+    text-align: center;
+    background-color: white;
+    padding: 10px;
+    width: 150px;
+    border-radius: 10px;
+    font-size: 12px;
+    top: 0;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.4);
+    display: none;
+    color: rgb(70, 70, 70);
+}
+
+.pokeball button:hover h3 {
+    display: block;
 }
 
 .pokeball img {
@@ -62,21 +82,17 @@
     text-shadow: -7px 7px 0 #2854bd;
     position: absolute;
     left: 15vw;
-    /* animation: shiny-text 1.5s ease-in-out infinite; */
 }
 
-/* 
-@keyframes shiny-text {
-    20% {
-      text-shadow: -0px -0px 0 #000, 0px -0px 0 #000, -0px 0px 0 #000, 0px 0px 0 #000;
+@media only screen and (max-width: 740px) {
+    .pokeball button h3 {
+        left: -30px;
+        top: -45px;
+        font-size: 8px;
+        width: 100px;
+        padding: 7px;
     }
-    50% {
-      text-shadow: -0px -0px 10px #fff, 1px -1px 10px #fff, -1px 1px 10px #fff, 1px 1px 10px #110a78;
-    }
-    80% {
-      text-shadow: -0px -0px 0 #000, 0px -0px 0 #000, -0px 0px 0 #000, 0px 0px 0 #000;
-    }
-  } */
+}
 
 @media only screen and (max-width: 1000px) {
     .draw-container {

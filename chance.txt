@@ -1,13 +1,13 @@
 //How to get Pokemon with eachball
 type = [pokeBall, greatBall, ultraBall]
-rare 1 = [90%, 100%, 100%]
-rare 2 = [80%, 100%, 100%]
-rare 3 = [70%, 100%, 100%]
-rare 4 = [60%, 90%, 100%]
-rare 5 = [45%, 67.5%, 90%]
-rare 6 = [35%, 52.5%, 70%]
-rare 7 = [20%, 30%, 40%]
-rare 8 = [10%, 15%, 20%]
+rare 1 = [80%, 100%, 100%]
+rare 2 = [70%, 100%, 100%]
+rare 3 = [50%, 75%, 100%]
+rare 4 = [40%, 60%, 80%]
+rare 5 = [30%, 45%, 60%]
+rare 6 = [20%, 30%, 40%]
+rare 7 = [12%, 18%, 24%]
+rare 8 = [8%, 12%, 16%]
 
 pokeball = regular ball
 greatball = chance 1.5 times more
@@ -16,3 +16,4 @@ masterBall = will have 100% chance
 
 
 //Chance to get the ball
+

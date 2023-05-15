@@ -119,7 +119,7 @@ export default function DrawPage() {
         axios({
             url: baseUrl + "/pokeball/decrease",
             method: "patch",
-            data: { name: ballType },
+            data: { ballType },
             headers: {access_token: localStorage.getItem("access_token")}
         }).then(() => {
             dispatch(getUserInfo())
@@ -127,58 +127,51 @@ export default function DrawPage() {
             if (ballType === 'masterball') return success(pokemon)
             if (baseExp < 44) {
                 if (ballType === 'pokeball') {
-                    if (randomNum <= 90) return success(pokemon)
+                    if (randomNum <= 80) return success(pokemon)
                     else return failed()
                 } else {
                     return success(pokemon)
                 }
             } else if (baseExp < 88) {
                 if (ballType === 'pokeball') {
-                    if (randomNum <= 80) return success(pokemon)
+                    if (randomNum <= 70) return success(pokemon)
                     else return failed()
                 } else {
                     return success(pokemon)
                 }
             } else if (baseExp < 132) {
                 if (ballType === 'pokeball') {
-                    if (randomNum <= 70) return success(pokemon)
+                    if (randomNum <= 50) return success(pokemon)
+                    else failed()
+                } else if (ballType === 'greatball') {
+                    if (randomNum <= 75) return success(pokemon)
                     else return failed()
                 } else {
                     return success(pokemon)
                 }
             } else if (baseExp < 176) {
                 if (ballType === 'pokeball') {
-                    if (randomNum <= 60) return success(pokemon)
-                    else failed()
+                    if (randomNum <= 40) return success(pokemon)
+                    else return failed()
                 } else if (ballType === 'greatball') {
-                    if (randomNum <= 90) return success(pokemon)
+                    if (randomNum <= 60) return success(pokemon)
                     else return failed()
                 } else {
-                    return success(pokemon)
+                    if (randomNum <= 80) return success(pokemon)
+                    else return failed()
                 }
             } else if (baseExp < 220) {
                 if (ballType === 'pokeball') {
-                    if (randomNum <= 45) return success(pokemon)
+                    if (randomNum <= 30) return success(pokemon)
                     else return failed()
                 } else if (ballType === 'greatball') {
-                    if (randomNum <= 67.5) return success(pokemon)
+                    if (randomNum <= 45) return success(pokemon)
                     else return failed()
                 } else {
-                    if (randomNum <= 90) return success(pokemon)
+                    if (randomNum <= 60) return success(pokemon)
                     else return failed()
                 }
             } else if (baseExp < 264) {
-                if (ballType === 'pokeball') {
-                    if (randomNum <= 35) return success(pokemon)
-                    else return failed()
-                } else if (ballType === 'greatball') {
-                    if (randomNum <= 52.5) return success(pokemon)
-                    else return failed()
-                } else {
-                    if (randomNum <= 70) return success(pokemon)
-                    else return failed()
-                }
-            } else if (baseExp < 308) {
                 if (ballType === 'pokeball') {
                     if (randomNum <= 20) return success(pokemon)
                     else return failed()
@@ -189,15 +182,26 @@ export default function DrawPage() {
                     if (randomNum <= 40) return success(pokemon)
                     else return failed()
                 }
-            } else {
+            } else if (baseExp < 308) {
                 if (ballType === 'pokeball') {
-                    if (randomNum <= 10) return success(pokemon)
+                    if (randomNum <= 12) return success(pokemon)
                     else return failed()
                 } else if (ballType === 'greatball') {
-                    if (randomNum <= 15) return success(pokemon)
+                    if (randomNum <= 18) return success(pokemon)
                     else return failed()
                 } else {
-                    if (randomNum <= 20) return success(pokemon)
+                    if (randomNum <= 24) return success(pokemon)
+                    else return failed()
+                }
+            } else {
+                if (ballType === 'pokeball') {
+                    if (randomNum <= 8) return success(pokemon)
+                    else return failed()
+                } else if (ballType === 'greatball') {
+                    if (randomNum <= 12) return success(pokemon)
+                    else return failed()
+                } else {
+                    if (randomNum <= 16) return success(pokemon)
                     else return failed()
                 }
             }
@@ -221,18 +225,22 @@ export default function DrawPage() {
                             <div className="pokeball">
                                 <button onClick={() => { get('pokeball', pokemon) }} style={{ border: 'rgb(77, 77, 77) solid 3px' }}>
                                     <img src={pokeBall} alt="" />
+                                    <h3>Just a regular pokeball</h3>
                                 </button>
                                 <span>{balls.pokeball}</span>
                                 <button onClick={() => { get('greatball', pokemon) }} style={{ border: 'rgb(0, 123, 255) solid 3px' }}>
                                     <img src={greatBall} alt="" />
+                                    <h3>1,5 times more effective</h3>
                                 </button>
                                 <span>{balls.greatball}</span>
                                 <button onClick={() => { get('ultraball', pokemon) }} style={{ border: 'rgb(255, 140, 0) solid 3px' }}>
                                     <img src={ultraBall} alt="" />
+                                    <h3>2 times more effective</h3>
                                 </button>
                                 <span>{balls.ultraball}</span>
                                 <button onClick={() => { get('masterball', pokemon) }} style={{ border: 'rgb(181, 0, 139) solid 3px' }}>
                                     <img src={masterBall} alt="" />
+                                    <h3>You must be kidding</h3>
                                 </button>
                                 <span>{balls.masterball}</span>
                             </div>
