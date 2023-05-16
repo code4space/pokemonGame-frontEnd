@@ -12,6 +12,7 @@ import { getUserInfo } from "../store/actions/fetchUser"
 import LoadingScreen from "../components/loading"
 import Swal from "sweetalert2"
 import giphy from "../assets/icon/giphy.gif"
+import { drawPokemon } from "../constant/helper"
 
 export default function DrawPage() {
     const [pokemon, setPokemon] = useState({})
@@ -30,7 +31,7 @@ export default function DrawPage() {
             method: "GET",
             headers: { access_token: localStorage.getItem('access_token') }
         }).then((res) => {
-            console.log(res)
+            res.data.pokemon.type = res.data.pokemon.type.split(',')
             setPokemon(res.data.pokemon)
         }).catch(error => {
             console.log(error);
@@ -55,7 +56,7 @@ export default function DrawPage() {
                     method: "GET",
                     headers: { access_token: localStorage.getItem('access_token') }
                 }).then((res) => {
-                    console.log(res)
+                    res.data.pokemon.type = res.data.pokemon.type.split(',')
                     setPokemon(res.data.pokemon)
                     setIsLoading(false); // Clear the loading state
                 }).catch(error => {
@@ -84,7 +85,7 @@ export default function DrawPage() {
               no-repeat
             `
         })
-        console.log(pokemon)
+        pokemon.type = pokemon.type.join(',')
         axios({
             url: baseUrl + '/pokemon',
             method: "POST",
@@ -113,7 +114,6 @@ export default function DrawPage() {
     function get(ballType, pokemon) {
         gameNotificationSound()
         if (draw < 1) return ''
-        const randomNum = Math.random() * 100;
         const baseExp = pokemon.baseExp
         setIsLoading(true)
         axios({
@@ -124,86 +124,10 @@ export default function DrawPage() {
         }).then(() => {
             dispatch(getUserInfo())
             setIsLoading(false)
-            if (ballType === 'masterball') return success(pokemon)
-            if (baseExp < 44) {
-                if (ballType === 'pokeball') {
-                    if (randomNum <= 80) return success(pokemon)
-                    else return failed()
-                } else {
-                    return success(pokemon)
-                }
-            } else if (baseExp < 88) {
-                if (ballType === 'pokeball') {
-                    if (randomNum <= 70) return success(pokemon)
-                    else return failed()
-                } else {
-                    return success(pokemon)
-                }
-            } else if (baseExp < 132) {
-                if (ballType === 'pokeball') {
-                    if (randomNum <= 50) return success(pokemon)
-                    else failed()
-                } else if (ballType === 'greatball') {
-                    if (randomNum <= 75) return success(pokemon)
-                    else return failed()
-                } else {
-                    return success(pokemon)
-                }
-            } else if (baseExp < 176) {
-                if (ballType === 'pokeball') {
-                    if (randomNum <= 40) return success(pokemon)
-                    else return failed()
-                } else if (ballType === 'greatball') {
-                    if (randomNum <= 60) return success(pokemon)
-                    else return failed()
-                } else {
-                    if (randomNum <= 80) return success(pokemon)
-                    else return failed()
-                }
-            } else if (baseExp < 220) {
-                if (ballType === 'pokeball') {
-                    if (randomNum <= 30) return success(pokemon)
-                    else return failed()
-                } else if (ballType === 'greatball') {
-                    if (randomNum <= 45) return success(pokemon)
-                    else return failed()
-                } else {
-                    if (randomNum <= 60) return success(pokemon)
-                    else return failed()
-                }
-            } else if (baseExp < 264) {
-                if (ballType === 'pokeball') {
-                    if (randomNum <= 20) return success(pokemon)
-                    else return failed()
-                } else if (ballType === 'greatball') {
-                    if (randomNum <= 30) return success(pokemon)
-                    else return failed()
-                } else {
-                    if (randomNum <= 40) return success(pokemon)
-                    else return failed()
-                }
-            } else if (baseExp < 308) {
-                if (ballType === 'pokeball') {
-                    if (randomNum <= 12) return success(pokemon)
-                    else return failed()
-                } else if (ballType === 'greatball') {
-                    if (randomNum <= 18) return success(pokemon)
-                    else return failed()
-                } else {
-                    if (randomNum <= 24) return success(pokemon)
-                    else return failed()
-                }
+            if(drawPokemon(ballType, baseExp)) {
+                return success(pokemon)
             } else {
-                if (ballType === 'pokeball') {
-                    if (randomNum <= 8) return success(pokemon)
-                    else return failed()
-                } else if (ballType === 'greatball') {
-                    if (randomNum <= 12) return success(pokemon)
-                    else return failed()
-                } else {
-                    if (randomNum <= 16) return success(pokemon)
-                    else return failed()
-                }
+                failed()
             }
         }).catch((err) => {
             console.log(err)
