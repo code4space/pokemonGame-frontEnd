@@ -17,7 +17,6 @@ export const gameNotificationSound = () => {
 
 export const PokemonTheme1 = (volume = 0.09) => {
     const audioRef = useRef(null);
-    // Set the volume to 50% when the component mounts
     useEffect(() => {
         audioRef.current.volume = volume;
     }, []);

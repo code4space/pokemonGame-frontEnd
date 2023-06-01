@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useRef, useEffect, useState } from "react";
+import { useState } from "react";
 import { PokemonTheme1, clickSound } from "../components/playSound";
 import Typewriter from "typewriter-effect";
 import axios from "axios";

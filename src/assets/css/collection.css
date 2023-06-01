@@ -1,4 +1,4 @@
-.collection h1 {
+.collection-title h1 {
   color: white;
   font-weight: bold;
   font-stretch: ultra-condensed;
@@ -9,6 +9,11 @@
   animation: title-collection 1.5s;
   position: relative;
 }
+
+.difficulty {
+  font-size: 10px;
+}
+
 
 .paging {
   width: 230px;
@@ -200,5 +205,11 @@
   100% {
     box-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
       1px 1px 0 #000;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .collection-title h1 {
+    font-size: 20px;
   }
 }

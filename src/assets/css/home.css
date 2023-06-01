@@ -1,139 +1,264 @@
 .lobby {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    width: 100vw;
-    height: 100vh;
-    background-image: url('../background/bg.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-color: rgb(255, 140, 39);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../background/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: rgb(255, 140, 39);
 }
 
 .logoPokemon {
-    max-width: 400px;
-    margin-bottom: 40px;
+  max-width: 400px;
+  margin-bottom: 40px;
 }
 
 .button-lobby {
-    width: 200px;
-    padding: 20px;
-    margin: 10px 25px 0 25px;
-    background-color: white;
-    box-shadow: inset 3px 3px 0px rgb(207, 207, 207),
-        inset -3px -3px 0px rgb(130, 130, 130);
+  width: 200px;
+  padding: 20px;
+  margin: 10px 25px 0 25px;
+  background-color: white;
+  box-shadow: inset 3px 3px 0px rgb(207, 207, 207),
+    inset -3px -3px 0px rgb(130, 130, 130);
 }
 
 .pikachu-gif {
-    position: absolute;
-    bottom: 10vh;
+  position: absolute;
+  bottom: 10vh;
 }
 
 .right-pikachu-position {
-    right: 2vw;
+  right: 2vw;
 }
 
 .left-pikachu-position {
-    left: 2vw;
-    transform: scaleX(-1);
+  left: 2vw;
+  transform: scaleX(-1);
 }
 
 .notification {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    font-size: 10px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  font-size: 10px;
 }
 
 .button-draw {
-    width: 100px;
-    padding: 10px;
-    margin: 30px 25px 0 25px;
-    background-color: rgb(255, 249, 131);
+  width: 100px;
+  padding: 10px;
+  margin: 30px 25px 0 25px;
+  background-color: rgb(255, 249, 131);
 }
 
-
 .top-icon-right {
-    position: absolute;
-    top: 3vh;
-    right: 3vw;
+  position: absolute;
+  top: 3vh;
+  right: 3vw;
+  z-index: 1;
 }
 
 .top-icon-left {
-    position: absolute;
-    top: 3vh;
-    left: 3vw;
+  position: absolute;
+  top: 3vh;
+  left: 3vw;
+  z-index: 1;
 }
 
 .back {
-    padding: 5px;
-    color: white;
-    background-color: rgb(246, 126, 66);
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7);
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 5px;
+  color: white;
+  background-color: rgb(246, 126, 66);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@keyframes outer-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 64, 64, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 7px 3px rgba(255, 0, 0, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 64, 64, 0.7);
+  }
+}
+
+.html-text {
+    font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: rgb(255, 102, 102);
 }
 
 .logout {
-    padding: 5px;
-    color: white;
-    background-color: rgb(246, 66, 75);
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7),
-    inset -2px -2px 0 rgba(0, 0, 0, 0.5),
-    inset 2px 2px 0 rgba(0, 0, 0, 0.2)
-    ;
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 5px;
+  color: white;
+  background-color: rgb(246, 66, 75);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7), inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+    inset 2px 2px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.navbar {
+  padding: 5px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7), inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+    inset 2px 2px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  color: black;
+  width: 40px;
+  background-color: white;
+}
+
+.navbar:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0 rgba(0, 0, 0, 0.7)
 }
 
 .music-icon {
-    color: white;
-    border: 3px solid white;
-    background-color: transparent;
-    cursor: pointer;
-    margin-right: 20px;
-    padding: 5px;
+  color: white;
+  border: 3px solid white;
+  background-color: transparent;
+  cursor: pointer;
+  margin-right: 20px;
+  padding: 5px;
 }
 
 .music-active {
-    background-color: white;
-    color: rgb(121, 202, 249);
+  background-color: white;
+  color: rgb(121, 202, 249);
 }
 
 .logout:active {
-    box-shadow: 0px 0px 0 rgba(0, 0, 0, 0.7),
-    inset -2px -2px 0 rgb(190, 25, 34),
+  box-shadow: 0px 0px 0 rgba(0, 0, 0, 0.7), inset -2px -2px 0 rgb(190, 25, 34),
     inset 2px 2px 0 rgb(190, 25, 34);
-    transform: translate(2px, 2px);
+  transform: translate(2px, 2px);
 }
 
 .back:active {
-    box-shadow: 0px 0px 0 rgba(0, 0, 0, 0.7),
-    inset -2px -2px 0 rgb(210, 95, 37),
+  box-shadow: 0px 0px 0 rgba(0, 0, 0, 0.7), inset -2px -2px 0 rgb(210, 95, 37),
     inset 2px 2px 0 rgb(210, 95, 37);
-    transform: translate(2px, 2px);
+  transform: translate(2px, 2px);
+}
+
+.nav-opt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.nav-opt button {
+  position: relative;
+}
+
+.nav-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background-color: rgb(255, 255, 255);
+  position: relative;
+  padding: 40px;
+}
+
+.nav-content p {
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.copyright{
+  color: gray;
+  line-height: 1.5;
+  font-size: 10px;
+  right: 10px;
+}
+
+.nav-bg {
+  background-color: rgba(0, 0, 0, 0.438);
+  backdrop-filter: blur(4px);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.lower-button {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.lower-button .music-icon {
+  border: 3px solid rgb(48, 48, 48);
+  color: rgb(48, 48, 48);
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.lower-button .music-active {
+  background-color: rgb(48, 48, 48);
+  color: white;
+}
+
+.lower-button .music-icon {
+  width: 30px;
+  height: 30px;
+}
+.credit {
+  background-color: rgb(110, 110, 110);
+}
+
+.credit:active {
+  box-shadow: none;
 }
 
 @media only screen and (max-width: 934px) {
-    .pikachu-gif {
-        display: none;
-    }
+  .pikachu-gif {
+    display: none;
+  }
 }
 
 @media only screen and (max-width: 500px) {
-    .button-lobby-ctrl {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-    }
+  .button-lobby-ctrl {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
 
-    .button-lobby {
-        margin-bottom: 20px;
-    }
+  .button-lobby {
+    margin-bottom: 20px;
+  }
 
-    .logoPokemon {
-        max-width: 300px;
-        margin-bottom: 2px;
-    }
+  .logoPokemon {
+    max-width: 250px;
+    margin-bottom: 20px;
+  }
+}
+
+.credit-bottom {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  position: absolute;
+  bottom: 20px;
+  cursor: pointer;
+  color: rgb(31, 31, 31);
+}
+
+.credit-bottom:hover {
+  text-decoration: underline;
 }

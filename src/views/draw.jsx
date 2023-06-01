@@ -16,7 +16,7 @@ import { drawPokemon } from "../constant/helper"
 
 export default function DrawPage() {
     const [pokemon, setPokemon] = useState({})
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch()
     const draw = useSelector((state) => {
         return state.UserReducer.draw
@@ -33,6 +33,7 @@ export default function DrawPage() {
         }).then((res) => {
             res.data.pokemon.type = res.data.pokemon.type.split(',')
             setPokemon(res.data.pokemon)
+            setIsLoading(false)
         }).catch(error => {
             console.log(error);
         });
@@ -48,7 +49,6 @@ export default function DrawPage() {
             headers: { access_token: localStorage.getItem("access_token") }
         })
             .then((res) => {
-                console.log(res)
                 // if (res.message !== 'Pokemon Skipped') throw new Error()
                 dispatch(getUserInfo())
                 axios({
@@ -72,7 +72,7 @@ export default function DrawPage() {
     function success(pokemon) {
         setIsLoading(true);
         Swal.fire({
-            title: `<div style="font-size:50px;">CONGRATS !!</div>`,
+            title: `<div style="font-size:40px;">CONGRATS</div>`,
             html: `you get <p style="margin-top:10px;">${pokemon.name}</p>`,
             width: 600,
             padding: '3em',
@@ -113,18 +113,18 @@ export default function DrawPage() {
 
     function get(ballType, pokemon) {
         gameNotificationSound()
-        if (draw < 1) return ''
+        if (draw < 1 || balls[ballType] < 1) return ''
         const baseExp = pokemon.baseExp
         setIsLoading(true)
         axios({
             url: baseUrl + "/pokeball/decrease",
             method: "patch",
             data: { ballType },
-            headers: {access_token: localStorage.getItem("access_token")}
+            headers: { access_token: localStorage.getItem("access_token") }
         }).then(() => {
             dispatch(getUserInfo())
             setIsLoading(false)
-            if(drawPokemon(ballType, baseExp)) {
+            if (drawPokemon(ballType, baseExp)) {
                 return success(pokemon)
             } else {
                 failed()
@@ -142,8 +142,8 @@ export default function DrawPage() {
         return (
             <>
                 <div className="lobby">
+                    <h1 className="draw-title">DRAW {draw}X</h1>
                     <div className="draw-container">
-                        <h1>DRAW {draw}X</h1>
                         <CardDetail pokemon={pokemon} cardCtrl={true} />
                         <div className="draw-ctrl-right-btn">
                             <div className="pokeball">

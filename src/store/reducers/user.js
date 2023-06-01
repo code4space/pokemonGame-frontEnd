@@ -1,9 +1,10 @@
-import { USER } from "../actions/actionType";
+import { SET_IS_HARD, USER } from "../actions/actionType";
 
 const initialState = {
     gacha: null,
     balls: {},
-    draw: null
+    draw: null,
+    isHard: false
 }
 
 function UserReducer (state = initialState, action) {
@@ -14,6 +15,11 @@ function UserReducer (state = initialState, action) {
                 gacha: action.payload.gacha,
                 balls: action.payload.balls,
                 draw: action.payload.draw
+            }
+        case SET_IS_HARD: 
+            return {
+                ...state,
+                isHard: action.isHard
             }
         default:
             return state;

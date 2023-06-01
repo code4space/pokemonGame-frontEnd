@@ -5,6 +5,8 @@ import PrivateRoute from "../components/privateRoute";
 import CollectionPage from "../views/collection";
 import TopNavbar from "../components/TopNavbar";
 import DrawPage from "../views/draw";
+import PreparePage from "../views/prepare";
+import GamePlayPage from "../views/gamePlay";
 
 const router = createBrowserRouter([
     {
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
                     {
                         path: '/draw',
                         element: <DrawPage />
+                    },
+                    {
+                        path: '/prepare',
+                        element: <PreparePage />
+                    },
+                    {
+                        path: '/play',
+                        element: <GamePlayPage />
                     },
                 ]
             }

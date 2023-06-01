@@ -18,9 +18,15 @@
     height: 34%;
     top: 0;
     left: 0;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
     z-index: 9;
+    padding: 10px;
+}
+
+.color-rank span {
+    color: white;
+    text-shadow: 2px 2px 1px black;
 }
 
 .pokemon-img {
@@ -69,7 +75,6 @@
 
 .stat img {
     max-width: 35px;
-    max-width: 35px;
     margin-right: 5px;
 }
 
@@ -79,6 +84,8 @@
     margin-top: 30px;
     color: rgb(56, 56, 56);
     font-size: 15px;
+    height: 90px;
+    overflow: auto;
 }
 
 .type {
@@ -111,6 +118,29 @@
     }
 }
 
+@media only screen and (max-width: 340px), (max-height: 680px) {
+    .card-detail {
+        width: 90vw;
+        height: 70vh;
+        max-width: 290px;
+        overflow: auto;
+    }
+
+    .card-detail .pokemon-img {
+        width: 120px;
+        height: 120px;
+        margin-top: 10vh;
+    }
+
+    .card-detail h2 {
+        font-size: 18px;
+    }
+
+    .card-detail .stat img {
+        max-width: 20px;
+    }
+}
+
 @media only screen and (max-width: 1000px) {
     .card-ctrl {
         width: 250px;
@@ -131,8 +161,8 @@
         font-size: 12px;
     }
 
-    .card-ctrl .stat span {
-        font-size: 13px;
+    .stat span {
+        font-size: 14px;
     }
 
     .card-ctrl .stat img {
@@ -140,12 +170,52 @@
         max-width: 26px;
     }
 
-    .card-ctrl p {
-        font-size: 13px;
+    .card-detail p {
+        font-size: 12px;
         margin-top: 12px;
+        height: 80px;
     }
 
     .card-ctrl .stat {
         margin-top: 15px;
     }
 }
+
+::-webkit-scrollbar {
+    background-color: transparent;
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(122, 122, 122, 0.267);
+    border-radius: 5px;
+}
+
+@media only screen and (max-width: 360px) {
+    .draw-container {
+        column-gap: 7px;
+    }
+
+    .card-ctrl {
+        width: 200px;
+        height: 450px;
+    }
+
+    .card-ctrl .type {
+        gap: 10px;
+    }
+
+    .card-ctrl .type span {
+        max-width: 80px;
+    }
+
+    .card-ctrl .stat img {
+        max-width: 20px;
+        max-width: 20px;
+    }
+
+    .card-ctrl .stat span {
+        font-size: 12px;
+    }
+
+} 

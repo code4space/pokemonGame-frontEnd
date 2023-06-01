@@ -53,6 +53,23 @@ export default function HomePage() {
         fetchData();
     }, [dispatch])
 
+    
+
+    useEffect(() => {
+        // Update the screen width whenever the window is resized
+        const handleResize = () => {
+            const width = window.innerWidth;
+            setIsMobile(width < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        // Clean up the event listener when the component unmounts
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     if (isLoading) {
         return (
             <LoadingScreen />
@@ -64,7 +81,7 @@ export default function HomePage() {
                 <img src={pikachu} alt="pikachu_gif" className="pikachu-gif left-pikachu-position" />
                 <img src={logoPokemon} alt="pokemon_logo" className="logoPokemon" />
                 <div className="button-lobby-ctrl">
-                    <div className="pixelated-border pixelated-border-effect button-lobby" onClick={() => { Move('/') }}>Play</div>
+                    <div className="pixelated-border pixelated-border-effect button-lobby" onClick={() => { Move('/prepare') }}>Play</div>
                     <div className="pixelated-border pixelated-border-effect button-lobby" onClick={() => { Move('/collection') }}>
                         {notification(totalPokemon)}
                         Collection
