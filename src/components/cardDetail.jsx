@@ -36,12 +36,13 @@ export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
             </div>
             <p>{summary}</p>
             <div className='type'>
-                {type?.map((el, i) => {
-                    if (!el?.name) return <span key={i} style={{ backgroundColor: styleType(el, 'background'), borderColor: styleType(el, 'border') }}>{el}</span>
-                    else return (
-                        <span key={i} style={{ backgroundColor: styleType(el.name, 'background'), borderColor: styleType(el.name, 'border') }}>{el.name}</span>
-                    )
-                })}
+                {cardCtrl ? type?.map((el, i) => {
+                    return <span key={i} style={{ backgroundColor: styleType(el, 'background'), borderColor: styleType(el, 'border') }}>{el}</span>
+                }) : 
+                type?.elements.map((el, i) => {
+                    return <span key={i} style={{ backgroundColor: styleType(el, 'background'), borderColor: styleType(el, 'border') }}>{el}</span>
+                })
+                }
             </div>
             <div className="color-rank" style={{ backgroundColor: setColor(baseExp) }}>
                 <span><i>{pokemon.level? `level ${pokemon.level}` : null}</i></span>

@@ -173,7 +173,7 @@
     .card-detail p {
         font-size: 12px;
         margin-top: 12px;
-        height: 80px;
+        height: 10vh;
     }
 
     .card-ctrl .stat {

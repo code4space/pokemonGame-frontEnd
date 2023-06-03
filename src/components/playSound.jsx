@@ -1,53 +1,53 @@
 import gameNotification from '../assets/sound/game-notification.wav'
 import clickTone from '../assets/sound/click-tone.wav'
+import jumpCoin from '../assets/sound/jump-coin.wav'
 import pokemonTheme1 from '../assets/sound/pokemon-theme.mp3'
 import pokemonTheme2 from '../assets/sound/pokemon-theme1.mp3'
-import { useRef, useEffect } from 'react'
+import battleMusic from '../assets/sound/battle-music.mp3'
+import gameOver from '../assets/sound/game-over.wav'
+import hit_sound from '../assets/sound/hit-sound.mp3'
+
+import ReactAudioPlayer from 'react-audio-player';
 
 export const clickSound = () => {
-    const audio = new Audio(clickTone)
-    audio.play()
-}
+    const audio = new Audio(clickTone);
+    audio.play();
+};
+
+export const clickSound1 = () => {
+    const audio = new Audio(jumpCoin);
+    audio.play();
+};
 
 export const gameNotificationSound = () => {
-    const audio = new Audio(gameNotification)
-    audio.volume = 0.4
-    audio.play()
-}
+    const audio = new Audio(gameNotification);
+    audio.volume = 0.4;
+    audio.play();
+};
 
-export const PokemonTheme1 = (volume = 0.09) => {
-    const audioRef = useRef(null);
-    useEffect(() => {
-        audioRef.current.volume = volume;
-    }, []);
+export const deathSound = () => {
+    const audio = new Audio(gameOver);
+    audio.volume = 0.4;
+    audio.play();
+};
 
-    return (
-        <audio ref={audioRef} autoPlay loop>
-            <source src={pokemonTheme1} type="audio/mpeg" />
-            Your browser does not support the audio element.
-        </audio>
-    )
-}
+export const hitSound = () => {
+    const audio = new Audio(hit_sound);
+    audio.volume = 0.4;
+    audio.play();
+};
 
-export const PokemonTheme2 = (volume = 0.09, playState) => {
-    const audioRef = useRef(null);
-    // Set the volume to 50% when the component mounts
-    useEffect(() => {
-        audioRef.current.volume = volume;
-    }, []);
+export const PokemonTheme1 = () => {
+    const volume = 0.09
+    return <ReactAudioPlayer src={pokemonTheme1} autoPlay loop volume={volume} />
+};
 
-    useEffect(() => {
-        if (playState) {
-            audioRef.current.play();
-        } else {
-            audioRef.current.pause();
-        }
-    }, [playState]);
+export const PokemonTheme2 = (playState) => {
+    const volume = 0.09
+    return <ReactAudioPlayer src={pokemonTheme2} autoPlay loop volume={volume} muted={!playState}/>
+};
 
-    return (
-        <audio ref={audioRef} autoPlay loop>
-            <source src={pokemonTheme2} type="audio/mpeg" />
-            Your browser does not support the audio element.
-        </audio>
-    )
-}
+export const battleSound = (playState) => {
+    const volume = 0.09
+    return <ReactAudioPlayer src={battleMusic} autoPlay loop volume={volume} muted={!playState} />
+};

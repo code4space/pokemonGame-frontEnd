@@ -14,10 +14,7 @@ export default function HomePage() {
 
     const [isLoading, setIsLoading] = useState(true);
 
-    let pokemon, totalPokemon, draw
-    pokemon = useSelector((state) => {
-        return state.PokemonReducer.pokemon
-    })
+    let totalPokemon, draw
     totalPokemon = useSelector((state) => {
         return state.PokemonReducer.totalPokemon
     })
@@ -52,23 +49,6 @@ export default function HomePage() {
         }
         fetchData();
     }, [dispatch])
-
-    
-
-    useEffect(() => {
-        // Update the screen width whenever the window is resized
-        const handleResize = () => {
-            const width = window.innerWidth;
-            setIsMobile(width < 768);
-        };
-
-        window.addEventListener('resize', handleResize);
-
-        // Clean up the event listener when the component unmounts
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
 
     if (isLoading) {
         return (

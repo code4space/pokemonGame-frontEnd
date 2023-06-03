@@ -1,9 +1,23 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { PokemonTheme2, clickSound } from "./playSound";
+import { PokemonTheme2 as pokemonTheme2, clickSound, battleSound } from "./playSound";
 import Swal from "sweetalert2";
 import { connect } from 'react-redux';
-import { setIsHard } from "../store/actions/setDifficulty";
+import { setIsHard } from "../store/actions/setGameSettings";
+
+const PokemonTheme2 = ({ activeMusic }) => {
+    return (
+        pokemonTheme2(activeMusic)
+    );
+
+};
+
+const BattleTheme = ({ activeMusic }) => {
+    return (
+        battleSound(activeMusic)
+    );
+
+};
 
 function TopNavbar({ isHard, setIsHard }) {
     const [activeMusic, setActiveMusic] = useState(true);
@@ -78,7 +92,7 @@ function TopNavbar({ isHard, setIsHard }) {
 
     return (
         <>
-            {PokemonTheme2(undefined, activeMusic)}
+            {location.pathname !== '/play' ? <PokemonTheme2 activeMusic={activeMusic} /> : <BattleTheme activeMusic={activeMusic} />}
             <div className="top-icon-left">
                 {location.pathname !== '/' ? <button className="back" onClick={back}>Back</button> : <button className="back difficulty" onClick={difficulty} style={isHard ? { animation: 'outer-glow 3s infinite', backgroundColor: 'rgb(245, 48, 48)' } : { backgroundColor: 'rgb(72, 236, 81)' }}>DIFFICULTY</button>}
             </div>
@@ -90,8 +104,8 @@ function TopNavbar({ isHard, setIsHard }) {
                         <p style={{ textAlign: 'center', marginBottom: '40px' }}>Thank you for trying my game! It was a personal project I completed in a month. While I've tried my best to fix any bugs, please
                             let me know if you encounter any issues or have suggestions. I'll share it on GitHub soon. Your support means a lot.</p>
                         <p><b>* Disclaimer:</b> No profits are generated from this project, and all intellectual property rights and ownership of the Pokémon TCG remain with the respective owners.</p>
-                        <p style={{paddingBottom: '30px'}}><b>* Song: <br /></b> &#9836; Hyper Potions - Littleroot Town <br />&#9836; Pokemon song - Littleroot Town</p>
-                        <p style={{textAlign: 'center'}} className="copyright">William 2023 | Designed and Created by William</p>
+                        <p style={{ paddingBottom: '30px' }}><b>* Song: <br /></b> &#9836; Hyper Potions - Littleroot Town <br />&#9836; Pokemon song - Littleroot Town</p>
+                        <p style={{ textAlign: 'center' }} className="copyright">William 2023 | Designed and Created by William</p>
                     </div>
                 </div>
             </div>}
@@ -112,11 +126,11 @@ function TopNavbar({ isHard, setIsHard }) {
                 </>
                 :
                 <>
-                {location.pathname === '/' && <span onClick={handleButtonCredit} className="credit-bottom">Credits</span>}
-                <div className="top-icon-right">
+                    {location.pathname === '/' && <span onClick={handleButtonCredit} className="credit-bottom">Credits</span>}
+                    <div className="top-icon-right">
                     <button className={activeMusic ? "music-icon music-active" : "music-icon"} onClick={musicButton}>Music</button>
-                    <button className="logout" onClick={logout}>Logout</button>
-                </div>
+                        <button className="logout" onClick={logout}>Logout</button>
+                    </div>
                 </>
             }
             <Outlet />

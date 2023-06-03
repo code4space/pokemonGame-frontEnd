@@ -9,8 +9,9 @@ import '../assets/css/prepare.css'
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import swordIcon from '../assets/icon/sword1.png'
+import { storeMyDeck } from "../store/actions/setGameSettings";
 
-function PreparePage({ isHard }) {
+function PreparePage({deck}) {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const pokemon = useSelector((state) => {
@@ -26,7 +27,7 @@ function PreparePage({ isHard }) {
     const totalPage = Math.ceil(totalPokemon / 50)
 
     const [selectedPokemon, setSelectedPokemon] = useState(null)
-    const [myDeck, setMyDeck] = useState([])
+    const [myDeck, setMyDeck] = useState(deck)
     const [isDeck, setIsDeck] = useState(false)
     const [activeSort, setActiveSort] = useState(false)
     const [activeDetail, setActiveDetail] = useState(false)
@@ -169,8 +170,12 @@ function PreparePage({ isHard }) {
 
 const mapStateToProps = (state) => {
     return {
-        isHard: state.UserReducer.isHard,
+        deck: state.UserReducer.deck,
     };
 };
 
-export default connect(mapStateToProps)(PreparePage);
+const mapDispatchToProps = {
+    storeMyDeck,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PreparePage);

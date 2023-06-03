@@ -2,8 +2,11 @@
   background-color: #daf0ce;
   height: 100vh;
   width: 100vw;
-  padding: 100px 10vw 0 10vw;
   position: relative;
+  padding-top: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .play-bg-stripes {
@@ -13,7 +16,6 @@
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
   justify-content: space-between;
   flex-direction: column;
 }
@@ -34,70 +36,185 @@
   background-color: #c4e1bf;
   width: 100%;
 }
-/* 
-.shadow {
-  width: 500px;
-  height: 500px;
-  border-radius: 300px;
-  transform: rotateX(80deg);
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #bcd2a5;
-  position: absolute;
-  top: -100px;
-  z-index: 0;
-}
-
-.shadow:nth-child(2) {
-  left: 0;
-}
-
-.enemy-side .shadow {
-  right: -20px;
-}
-
-.shadow1 {
-  width: 440px;
-  height: 440px;
-  border-radius: 300px;
-  transform: rotateX(35deg);
-  background-color: #a9c88b;
-}
 
 .pokemon-place {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 460px;
-  height: 230px;
-}
-
-.pokemon-img-container {
-  z-index: 1;
-  width: 150px;
-  height: 150px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: 3s all ease;
-}
-
-.pokemon-img-container img {
-  width: 200%;
-  height: 200%;
-  object-fit: cover;
-  animation: moveLeft 1s linear infinite;
+  max-width: 1090px;
+  width: 100vw;
+  height: 24vh;
+  padding: 0 3vw;
   position: relative;
 }
 
-.enemy-side {
+.shadow {
+  width: 80%;
+  height: 100%;
+  max-width: 638px;
+  object-fit: contain;
+}
+
+.enemy {
   display: flex;
-  width: calc(100% - 20px);
-  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.pokemon-char {
+  position: absolute;
+  max-width: 638px;
+  width: 80%;
+  height: 20vh;
+  bottom: 15%;
+  display: flex;
+  flex-direction: row;
+  display: flex;
+  justify-content: center;
+}
+
+.pokemon-img-ctrl {
+  width: 33%;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.pokemon-img-ctrl div {
+  font-size: 12px;
+  color: rgb(228, 228, 228);
+  text-shadow: 1.5px 1.5px 0 rgba(0, 0, 0, 0.9),
+    -1.5px -1.5px 0 rgba(19, 19, 19, 0.9), -1.5px 1.5px 0 rgba(19, 19, 19, 0.9),
+    1.5px -1.5px 0 rgba(19, 19, 19, 0.9);
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+}
+
+.pokemon-img-ctrl span {
+  position: absolute;
+  top: 0;
+  color: white;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.9);
+  font-size: 10px;
+  min-width: 40px;
+  width: 50%;
+}
+
+.pokemon-img-ctrl h5 {
+  position: absolute;
+  color: white;
+  right: 0;
+  text-shadow: 1.5px 1.5px 0 rgba(0, 0, 0, 0.9),
+    -1.5px -1.5px 0 rgba(19, 19, 19, 0.9), -1.5px 1.5px 0 rgba(19, 19, 19, 0.9),
+    1.5px -1.5px 0 rgba(19, 19, 19, 0.9);
+  font-size: 10px;
+  min-width: 40px;
+  width: 50%;
+  text-align: center;
+  animation: damage 0.8s linear 0s;
+  animation-fill-mode: both;
+}
+
+@keyframes damage {
+  0% {
+    opacity: 1;
+    top: 50%;
+  }
+  100% {
+    opacity: 0;
+    top: -10px;
+  }
+}
+
+.hp {
+  transition: 0.5s all ease;
+  content: "";
+  width: 100%;
+  height: 10px;
+  border: 2px solid black;
+}
+
+.pokemon-img-ctrl:nth-child(odd) img {
+  animation: moveLeft 1s linear 0s infinite;
+}
+
+.pokemon-img-ctrl:nth-child(even) img {
+  animation: moveRight 1s linear 0s infinite;
+}
+
+.pokemon-img-ctrl img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: relative;
+}
+
+@keyframes shake {
+  0% {
+    top: 0;
+  }
+  50% {
+    top: 4px;
+  }
+  100% {
+    top: 0;
+  }
+}
+
+@keyframes hitEffect {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    filter: hue-rotate(90deg);
+  }
+  51% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(90deg);
+  }
+}
+
+@keyframes shake1 {
+  0% {
+    top: 0;
+  }
+  5% {
+    top: 4px;
+  }
+  10% {
+    top: 0;
+  }
+  15% {
+    top: 4px;
+  }
+  20% {
+    top: 0;
+  }
+  100% {
+    top: 0;
+  }
+}
+
+@keyframes hitEffect1 {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  12.5% {
+    filter: hue-rotate(90deg);
+  }
+  25% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(90deg);
+  }
+  51% {
+    filter: hue-rotate(0deg);
+  }
+  0% {
+    filter: hue-rotate(0deg);
+  }
 }
 
 @keyframes moveLeft {
@@ -105,7 +222,7 @@
     left: 0;
   }
   50% {
-    left: 2px;
+    left: 8px;
   }
   100% {
     left: 0;
@@ -122,11 +239,11 @@
   100% {
     right: 0;
   }
-} */
+}
 
 .dialogue-container {
   width: 100vw;
-  height: 330px;
+  height: 40vh;
   background-color: #313131;
   position: absolute;
   bottom: 0;
@@ -163,77 +280,41 @@
   height: 100%;
   border-radius: 10px;
   padding: 10px;
+  overflow-y: auto;
 }
 
 .dialogue-border3 p {
-  color: #8e8e95;
+  color: #464646;
   text-shadow: -2px 2px 0px rgba(0, 0, 0, 0.1);
 }
 
-/* 
-@media only screen and (max-width: 2400px) {
-  .play-bg {
-    padding-right: 30vw;
-    padding-left: 30vw;
-  }
+.turn-opt {
+  display: flex;
+  color: #979393;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 30px;
 }
 
-@media only screen and (max-width: 2030px) {
-  .play-bg {
-    padding-right: 25vw;
-    padding-left: 25vw;
-  }
+.turn-opt span:hover {
+  color: #464646;
+  cursor: pointer;
 }
 
-@media only screen and (max-width: 1500px) {
-  .play-bg {
-    padding-right: 20vw;
-    padding-left: 20vw;
+@media only screen and (max-width: 475px) {
+  .dialogue-border3 p {
+    font-size: 12px;
+  }
+
+  .dialogue-border3 span {
+    font-size: 12px;
+  }
+
+  .pokemon-img-ctrl div {
+    display: none;
+  }
+
+  .pokemon-img-ctrl img:hover ~ div {
+    display: flex;
   }
 }
-
-@media only screen and (max-width: 1150px) {
-  .play-bg {
-    padding-right: 15vw;
-    padding-left: 15vw;
-  }
-}
-
-@media only screen and (max-width: 700px) {
-  .play-bg {
-    padding: 0;
-    padding-top: 70px;
-  }
-
-  .shadow {
-    width: 250px;
-    height: 250px;
-    top: -30px;
-  }
-
-  .shadow1 {
-    width: 220px;
-    height: 220px;
-    border-radius: 150px;
-  }
-
-  .pokemon-img-container {
-    width: 75px;
-    height: 75px;
-  }
-
-  .enemy-side .shadow {
-    right: 15px;
-  }
-
-  .pokemon-place {
-    width: 280px;
-    height: 150px;
-  }
-}
-
-@media only screen and (max-height: 690px) {
-  .dialogue-container {
-    height: 200px;
-  }
-} */

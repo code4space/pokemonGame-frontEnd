@@ -174,3 +174,38 @@ export function styleType (type, style) {
       break;
   } 
 }
+
+export function damageDealt(attack, defense, basePower, enemyAttr, attackerAttr) {
+  const modifier = Math.random() * (1 - 0.85) + 0.85;
+  let status = 'Normal'
+  let damage = (((2) / 5 + 2) * (attack / defense) * (basePower / 2) / 50 + 2) * modifier
+
+  // is Immune ?
+  for (let i = 0; i < attackerAttr.elements.length; i++) {
+      for (let j = 0; j < enemyAttr.immune.length; j++) {
+          if (attackerAttr.elements[i] === enemyAttr.immune[j]) return {damage: 0, status: 'immune'}
+      }
+  }
+
+  // Hit Effectiveness
+  attackerAttr.elements.forEach(attackerEl => {
+      enemyAttr.weakness.forEach(enemyEl => {
+          if (attackerEl === enemyEl) {
+            damage *= 2
+            status = 'Effective'
+          }
+      })
+  })
+
+  // Defense Effectiveness
+  attackerAttr.weakness.forEach(attackerEl => {
+      enemyAttr.elements.forEach(enemyEl => {
+          if (attackerEl === enemyEl) {
+            damage /= 2
+            status = 'Ineffective'
+          }
+      })
+  })
+
+  return {damage: Math.ceil(damage), status}
+}
