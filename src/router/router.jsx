@@ -7,6 +7,8 @@ import TopNavbar from "../components/TopNavbar";
 import DrawPage from "../views/draw";
 import PreparePage from "../views/prepare";
 import GamePlayPage from "../views/gamePlay";
+import LosePage from "../views/losePage";
+import WinPage from "../views/winPage";
 
 const router = createBrowserRouter([
     {
@@ -38,6 +40,14 @@ const router = createBrowserRouter([
                     {
                         path: '/play',
                         element: <GamePlayPage />
+                    },
+                    {
+                        path: '/play/lose',
+                        element: <LosePage />
+                    },
+                    {
+                        path: '/play/win',
+                        element: <WinPage />
                     },
                 ]
             }

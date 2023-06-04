@@ -2,34 +2,63 @@ import { useEffect, useState } from 'react'
 import '../assets/css/gamePlay.css'
 import shadow from '../assets/icon/shadow.png'
 import { useSelector } from 'react-redux'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { clickSound1, deathSound, hitSound } from '../components/playSound'
 import axios from 'axios'
 import { baseUrl } from '../constant/url'
 import LoadingScreen from '../components/loading'
-import Swal from 'sweetalert2'
 import { damageDealt } from '../constant/helper'
+import bookIcon from '../assets/icon/book.png'
+import InstructionPage from '../components/instruction'
 
 export default function GamePlayPage() {
+
+    // game state
     const [turn, setTurn] = useState(0)
     const [isMyTurn, setIsMyTurn] = useState(true)
     const [enemies, setEnemies] = useState(false)
-    const [isLoading, setIsLoading] = useState(true)
     const [attackMenu, setAttackMenu] = useState(false)
     const [remainingHP, setRemainingHP] = useState([])
     const [myDeck, setMyDeck] = useState([])
+    const [instruction, setInstruction] = useState(false)
+    
+    // set useEffect (if clear the function will run normally)
     const [clear, setClear] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
 
     // effect
     const [targetEffect, setTargetEffetct] = useState(false)
     const [hitEffect, setHitEffect] = useState(false)
-    const [damage, setDamage] = useState(0)
-    const [effectiveness, setEffectiveness] = useState('normal')
+    const [damage, setDamage] = useState({ total: 0, effectiveness: 'Normal' })
+
+    const navigate = useNavigate()
 
 
     const difficulty = useSelector((state) => {
         return state.UserReducer.isHard
     })
+
+    const lose = async () => {
+        let state = { isLose: true, difficulty };
+        if (difficulty) {
+            const deletedPokemon = deck[Math.floor(Math.random() * 3)]
+            if (!state['pokemon']) state['pokemon'] = deletedPokemon.name 
+            await axios({
+                url: baseUrl + `/pokemon/${deletedPokemon.id}`,
+                method: 'DELETE',
+                headers: { access_token: localStorage.getItem('access_token') },
+                data: {
+                    listBall: [
+                        { ball: 'pokeball', increase: difficulty ? 3 : 5 },
+                        { ball: 'greatball', increase: difficulty ? 4 : 3 },
+                        { ball: 'ultraball', increase: difficulty ? 2 : 1 },
+                        { ball: 'masterball', increase: difficulty ? 1 : 0 },
+                    ]
+                }
+            });
+        }
+        navigate('/play/lose', { state });
+    };
 
     const deck = useSelector((state) => {
         return state.UserReducer.deck
@@ -53,20 +82,15 @@ export default function GamePlayPage() {
 
     }
 
-    // function win () {
-    //     Swal
-    // }
-
     function attackingTarget(target) {
         setAttackMenu(false)
         hitSound()
         setTargetEffetct(target)
         setHitEffect(true);
         const dd = damageDealt(myDeck[turn]?.attack, enemies[target].def, myDeck[turn].power, enemies[target].type, myDeck[turn].type)
-        setDamage(dd.damage)
-        setEffectiveness(dd.status)
+        setDamage({ ...damage, total: dd.damage, effectiveness: dd.status })
 
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async () => {
             setHitEffect(false);
             const temp = [...remainingHP]
             temp[target + myDeck.length] -= dd.damage
@@ -78,7 +102,43 @@ export default function GamePlayPage() {
                 setEnemies(tempEnemy)
                 temp.splice(target + myDeck.length, 1)
                 setRemainingHP(temp)
-                if (tempEnemy.length < 1) return console.log('you WIN')
+                if (tempEnemy.length < 1) {
+                    try {
+                        const id = deck.map(el => el.id);
+
+                        await axios({
+                            url: baseUrl + '/pokemon/levelup',
+                            method: 'PATCH',
+                            headers: { access_token: localStorage.getItem('access_token') },
+                            data: { pokemonId: id, upLevel: difficulty ? 2 : 1 }
+                        });
+
+                        await axios({
+                            url: baseUrl + '/pokeball/increase',
+                            method: 'PATCH',
+                            headers: { access_token: localStorage.getItem('access_token') },
+                            data: {
+                                listBall: [
+                                    { ball: 'pokeball', increase: difficulty ? 3 : 5 },
+                                    { ball: 'greatball', increase: difficulty ? 4 : 3 },
+                                    { ball: 'ultraball', increase: difficulty ? 2 : 1 },
+                                    { ball: 'masterball', increase: difficulty ? 1 : 0 },
+                                ]
+                            }
+                        });
+
+                        await axios({
+                            url: baseUrl + `/draw/increase/${difficulty ? 7 : 4}`,
+                            method: 'PATCH',
+                            headers: { access_token: localStorage.getItem('access_token') }
+                        });
+
+                        const state = { isWin: true, difficulty };
+                        navigate('/play/win', { state });
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
             } else {
                 setRemainingHP(temp)
             }
@@ -95,14 +155,13 @@ export default function GamePlayPage() {
     }
 
     function enemyTurn(index) {
-        if (!myDeck[0]) return console.log('YOU LOSEEE')
-
+        if (!myDeck[0]) return lose()
         const temp = [...remainingHP]
         const dd = damageDealt(enemies[index - myDeck.length]?.attack, myDeck[0]?.def, enemies[index - myDeck.length]?.power, myDeck[0]?.type, enemies[index - myDeck.length]?.type)
         temp[0] -= dd.damage
+        console.log(dd)
         let tempDeck = [...myDeck]
-        setDamage(dd.damage)
-        setEffectiveness(dd.status)
+        setDamage({ ...damage, total: dd.damage, effectiveness: dd.status })
 
         hitSound()
         setTargetEffetct(0)
@@ -142,7 +201,7 @@ export default function GamePlayPage() {
 
         if (turn + 1 === myDeck.length) {
             setTurn(turn + 1)
-            setIsMyTurn(false)
+            return setIsMyTurn(false)
         }
 
         return setTurn(turn + 1)
@@ -168,7 +227,6 @@ export default function GamePlayPage() {
     }
 
     useEffect(() => {
-        console.log(difficulty)
         axios({
             url: baseUrl + `/pokemon/enemies/${difficulty}`,
             method: "GET",
@@ -188,15 +246,17 @@ export default function GamePlayPage() {
 
     useEffect(() => {
         if (turn >= myDeck.length && clear) {
-            console.log(turn, 'masuk', myDeck)
             enemyTurn(turn);
         }
     }, [turn, enemies, myDeck]);
 
+    function handleButtonInstruction () {
+        setInstruction(!instruction)
+    }
+
     if (isLoading) return <LoadingScreen />
     else {
-
-        if (!myDeck.length) {
+        if (!deck.length) {
             return <Navigate to={'/prepare'}></Navigate>;
         }
         return (
@@ -217,7 +277,7 @@ export default function GamePlayPage() {
                                         <img src={el.frontView} alt="" style={((hitEffect && isMyTurn) && targetEffect === i) ? { animation: 'shake 0.4s linear 0s, hitEffect 1s linear 0s' } : null} />
                                         <span>Hp. <span className='hp' style={{ background: `linear-gradient(90deg, rgb(250, 9, 69) 0%, rgb(250, 9, 69) ${(remainingHP[i + myDeck.length] / el.hp) * 100}%, rgba(255,255,255,1) ${(remainingHP[i + myDeck.length] / el.hp) * 100}%)` }}></span></span>
                                         <div>{el.name}</div>
-                                        {((hitEffect && isMyTurn) && targetEffect === i) && <h5><b style={effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : effectiveness === 'Ineffective' ? {color: 'rgb(216, 214, 77)'} : {color: 'white'}}>{effectiveness}</b> {damage}</h5>}
+                                        {((hitEffect && isMyTurn) && targetEffect === i) && <h5><b style={damage.effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : damage.effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : damage.effectiveness === 'Ineffective' ? { color: 'rgb(216, 214, 77)' } : { color: 'white' }}>{damage.effectiveness}</b> {damage.total}</h5>}
                                     </div>
                                 )
                             })}
@@ -227,13 +287,13 @@ export default function GamePlayPage() {
                         <img src={shadow} alt="pokemon-shadow" className='shadow' />
                         <div className='pokemon-char'>
                             {myDeck.map((el, i) => {
-                                console.log(targetEffect, i)
                                 return (
                                     <div className='pokemon-img-ctrl' key={i}>
                                         <img src={el.backView} alt="" style={((hitEffect && !isMyTurn) && i === 0) ? { animation: 'shake1 2s linear 0s infinite, hitEffect1 2s linear 0s infinite' } : null} />
                                         <span>Hp. <span className='hp' style={{ background: `linear-gradient(90deg, rgb(250, 9, 69) 0%, rgb(250, 9, 69) ${(remainingHP[i] / el.hp) * 100}%, rgba(255,255,255,1) ${(remainingHP[i] / el.hp) * 100}%)` }}></span></span>
                                         <div>{el.name}</div>
-                                        {((hitEffect && !isMyTurn) && 0 === i) && <h5><b style={effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : effectiveness === 'Ineffective' ? {color: 'rgb(216, 214, 77)'} : {color: 'white'}}>{effectiveness}</b> {damage}</h5>}
+                                        {((hitEffect && !isMyTurn) && 0 === i) && console.log(damage)}
+                                        {((hitEffect && !isMyTurn) && 0 === i) && <h5><b style={damage.effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : damage.effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : damage.effectiveness === 'Ineffective' ? { color: 'rgb(216, 214, 77)' } : { color: 'white' }}>{damage.effectiveness}</b> {damage.total}</h5>}
                                     </div>
                                 )
                             })}
@@ -260,7 +320,7 @@ export default function GamePlayPage() {
                                                     <div className='turn-opt'>
                                                         {attackMenu ?
                                                             <>{enemies.map((el, i) => {
-                                                                return <span key={el.id} onClick={() => attackingTarget(i)}>*Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
+                                                                return <span key={el.id} onClick={() => attackingTarget(i)}>* Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
                                                             })}
                                                                 <span onClick={back} style={{ marginTop: '20px' }}>* Back</span></>
                                                             :
@@ -269,13 +329,20 @@ export default function GamePlayPage() {
                                                     </div>
                                                 </>
                                             :
-                                            <p>ENEMY turn</p>
+                                            <>
+                                                <p>ENEMY turn</p>
+                                                <div className='turn-opt'>
+                                                    <span>{enemies[turn - myDeck.length].name} attacking...</span>
+                                                </div>
+                                            </>
                                     }
+                                    <div className='book' onClick={handleButtonInstruction}><img src={bookIcon} alt="book"/></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div >
+                {instruction && <InstructionPage close={handleButtonInstruction}/>}
             </>
         )
     }

@@ -1,0 +1,46 @@
+.win-content {
+    background-color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 80vw;
+}
+
+.win-content h2 {
+    margin-bottom: 10px;
+}
+
+.win-content p {
+    color: rgb(46, 46, 46);
+    text-shadow: none;
+    line-height: 1.2;
+}
+
+.reward-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 28px;
+}
+
+.ball-reward {
+    width: 60px;
+    height: 60px;
+}
+
+.ball-reward img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    margin-bottom: 5px;
+}
+
+.win-content + button {
+    margin-top: 15px;
+    background-color: rgb(66, 228, 66);
+    color: white;
+}

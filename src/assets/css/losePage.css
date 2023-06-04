@@ -1,0 +1,91 @@
+.black-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(51, 51, 51);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.black-bg h1 {
+  color: white;
+  text-shadow: 3px 3px 0 rgb(0, 0, 0);
+  font-size: 50px;
+  animation: fade 5s linear;
+  animation-fill-mode: both;
+  text-align: center;
+}
+
+.black-bg button {
+    background-color: rgb(150, 69, 69);
+    padding: 30px;
+    font-size: 30px;
+}
+
+.black-bg p {
+    text-align: center;
+    text-shadow: 2px 2px 0 rgb(0, 0, 0);
+    color: white;
+    width: 70vw;
+    margin-bottom: 30px;
+    
+}
+
+.black-bg button:active {
+    box-shadow: none;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+    transform: translateY(200px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  61% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  68% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  70% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  84% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  88% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  92% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  96% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  99% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+    display: none;
+  }
+}

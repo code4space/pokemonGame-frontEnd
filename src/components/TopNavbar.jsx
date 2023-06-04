@@ -92,7 +92,7 @@ function TopNavbar({ isHard, setIsHard }) {
 
     return (
         <>
-            {location.pathname !== '/play' ? <PokemonTheme2 activeMusic={activeMusic} /> : <BattleTheme activeMusic={activeMusic} />}
+            { (location.pathname !== '/play/lose' && location.pathname !== '/play/win') && (location.pathname !== '/play' ? <PokemonTheme2 activeMusic={activeMusic} /> : <BattleTheme activeMusic={activeMusic} />)}
             <div className="top-icon-left">
                 {location.pathname !== '/' ? <button className="back" onClick={back}>Back</button> : <button className="back difficulty" onClick={difficulty} style={isHard ? { animation: 'outer-glow 3s infinite', backgroundColor: 'rgb(245, 48, 48)' } : { backgroundColor: 'rgb(72, 236, 81)' }}>DIFFICULTY</button>}
             </div>

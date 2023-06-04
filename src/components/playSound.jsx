@@ -6,6 +6,8 @@ import pokemonTheme2 from '../assets/sound/pokemon-theme1.mp3'
 import battleMusic from '../assets/sound/battle-music.mp3'
 import gameOver from '../assets/sound/game-over.wav'
 import hit_sound from '../assets/sound/hit-sound.mp3'
+import lose_sound from '../assets/sound/lose-sound.mp3'
+import win_sound from '../assets/sound/win-sound.mp3'
 
 import ReactAudioPlayer from 'react-audio-player';
 
@@ -33,6 +35,18 @@ export const deathSound = () => {
 
 export const hitSound = () => {
     const audio = new Audio(hit_sound);
+    audio.volume = 0.4;
+    audio.play();
+};
+
+export const winSound = () => {
+    const audio = new Audio(win_sound);
+    audio.volume = 0.4;
+    audio.play();
+};
+
+export const loseSound = () => {
+    const audio = new Audio(lose_sound);
     audio.volume = 0.4;
     audio.play();
 };
