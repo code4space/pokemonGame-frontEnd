@@ -14,7 +14,7 @@ function UserReducer (state = initialState, action) {
             return {
                 ...state,
                 gacha: action.payload.gacha,
-                balls: action.payload.balls,
+                balls: JSON.parse(action.payload.balls),
                 draw: action.payload.draw
             }
         case SET_IS_HARD: 
@@ -25,7 +25,7 @@ function UserReducer (state = initialState, action) {
         case SET_BATTLE_DECK: 
             return {
                 ...state,
-                isHard: action.isHard
+                deck: action.payload
             }
         default:
             return state;
