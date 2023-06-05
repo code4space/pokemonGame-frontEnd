@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../assets/css/gamePlay.css'
 import shadow from '../assets/icon/shadow.png'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { clickSound1, deathSound, hitSound } from '../components/playSound'
 import axios from 'axios'
@@ -10,6 +10,7 @@ import LoadingScreen from '../components/loading'
 import { damageDealt } from '../constant/helper'
 import bookIcon from '../assets/icon/book.png'
 import InstructionPage from '../components/instruction'
+import { SET_BATTLE_DECK } from '../store/actions/actionType'
 
 export default function GamePlayPage() {
 
@@ -19,9 +20,10 @@ export default function GamePlayPage() {
     const [enemies, setEnemies] = useState(false)
     const [attackMenu, setAttackMenu] = useState(false)
     const [remainingHP, setRemainingHP] = useState([])
+    const [barrier, setBarrier] = useState([])
     const [myDeck, setMyDeck] = useState([])
     const [instruction, setInstruction] = useState(false)
-    
+
     // set useEffect (if clear the function will run normally)
     const [clear, setClear] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
@@ -38,11 +40,16 @@ export default function GamePlayPage() {
         return state.UserReducer.isHard
     })
 
+    const deck = useSelector((state) => {
+        return state.UserReducer.deck
+    })
+    const dispatch = useDispatch();
+
     const lose = async () => {
         let state = { isLose: true, difficulty };
         if (difficulty) {
             const deletedPokemon = deck[Math.floor(Math.random() * 3)]
-            if (!state['pokemon']) state['pokemon'] = deletedPokemon.name 
+            if (!state['pokemon']) state['pokemon'] = deletedPokemon.name
             await axios({
                 url: baseUrl + `/pokemon/${deletedPokemon.id}`,
                 method: 'DELETE',
@@ -56,14 +63,11 @@ export default function GamePlayPage() {
                     ]
                 }
             });
+
+            dispatch({ type: SET_BATTLE_DECK, payload: [] });
         }
         navigate('/play/lose', { state });
     };
-
-    const deck = useSelector((state) => {
-        return state.UserReducer.deck
-    })
-
 
     function renderStripes() {
         const height = [10, 8, 6, 4, 2, 0.1]
@@ -158,8 +162,18 @@ export default function GamePlayPage() {
         if (!myDeck[0]) return lose()
         const temp = [...remainingHP]
         const dd = damageDealt(enemies[index - myDeck.length]?.attack, myDeck[0]?.def, enemies[index - myDeck.length]?.power, myDeck[0]?.type, enemies[index - myDeck.length]?.type)
-        temp[0] -= dd.damage
-        console.log(dd)
+
+        // barrier
+        const tempBarrier = [...barrier]
+        tempBarrier[0] -= dd.damage
+
+        if (tempBarrier[0] > 0) setBarrier(tempBarrier)
+        else {
+            temp[0] += tempBarrier[0]
+            tempBarrier[0] = 0
+            setBarrier(tempBarrier)
+        }
+
         let tempDeck = [...myDeck]
         setDamage({ ...damage, total: dd.damage, effectiveness: dd.status })
 
@@ -187,6 +201,7 @@ export default function GamePlayPage() {
 
             if (turn + 1 === myDeck.length + enemies.length) {
                 setTurn(0)
+                setBarrier([0, 0, 0])
                 return setIsMyTurn(true)
             }
 
@@ -196,8 +211,13 @@ export default function GamePlayPage() {
         return () => clearTimeout(timer);
     }
 
-    function handleButtonDef(name) {
+    function handleButtonDef(index) {
         clickSound1()
+
+        const gainBarrier = Math.ceil((myDeck[index].def * 15 / 100) + (myDeck[index].hp * 15 / 100))
+        let tempBarrier = [...barrier]
+        tempBarrier[index] = gainBarrier
+        setBarrier(tempBarrier)
 
         if (turn + 1 === myDeck.length) {
             setTurn(turn + 1)
@@ -216,13 +236,16 @@ export default function GamePlayPage() {
         if (remainingHP.length) return null
         else {
             let temp = []
+            let tempBarrier = []
             deck.forEach(el => {
                 temp.push(el.hp)
+                tempBarrier.push(0)
             })
             enemies.forEach(el => {
                 temp.push(el.hp)
             })
             setRemainingHP(temp)
+            setBarrier(tempBarrier)
         }
     }
 
@@ -250,7 +273,7 @@ export default function GamePlayPage() {
         }
     }, [turn, enemies, myDeck]);
 
-    function handleButtonInstruction () {
+    function handleButtonInstruction() {
         setInstruction(!instruction)
     }
 
@@ -275,7 +298,9 @@ export default function GamePlayPage() {
                                 return (
                                     <div className='pokemon-img-ctrl' key={i}>
                                         <img src={el.frontView} alt="" style={((hitEffect && isMyTurn) && targetEffect === i) ? { animation: 'shake 0.4s linear 0s, hitEffect 1s linear 0s' } : null} />
-                                        <span>Hp. <span className='hp' style={{ background: `linear-gradient(90deg, rgb(250, 9, 69) 0%, rgb(250, 9, 69) ${(remainingHP[i + myDeck.length] / el.hp) * 100}%, rgba(255,255,255,1) ${(remainingHP[i + myDeck.length] / el.hp) * 100}%)` }}></span></span>
+                                        <span className='hp-bar'><p>Hp.</p> <span className='hp'>
+                                            <span style={{ width: `${(remainingHP[i + myDeck.length] / el.hp) * 100}%` }}></span>
+                                        </span></span>
                                         <div>{el.name}</div>
                                         {((hitEffect && isMyTurn) && targetEffect === i) && <h5><b style={damage.effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : damage.effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : damage.effectiveness === 'Ineffective' ? { color: 'rgb(216, 214, 77)' } : { color: 'white' }}>{damage.effectiveness}</b> {damage.total}</h5>}
                                     </div>
@@ -290,9 +315,11 @@ export default function GamePlayPage() {
                                 return (
                                     <div className='pokemon-img-ctrl' key={i}>
                                         <img src={el.backView} alt="" style={((hitEffect && !isMyTurn) && i === 0) ? { animation: 'shake1 2s linear 0s infinite, hitEffect1 2s linear 0s infinite' } : null} />
-                                        <span>Hp. <span className='hp' style={{ background: `linear-gradient(90deg, rgb(250, 9, 69) 0%, rgb(250, 9, 69) ${(remainingHP[i] / el.hp) * 100}%, rgba(255,255,255,1) ${(remainingHP[i] / el.hp) * 100}%)` }}></span></span>
+                                        <span className='hp-bar'><p>Hp.</p> <span className='hp'>
+                                            <span style={{ width: `${(remainingHP[i] / el.hp) * 100}%` }}></span>
+                                            <span style={{ width: `${(barrier[i] / el.hp) * 100}%` }}></span>
+                                        </span></span>
                                         <div>{el.name}</div>
-                                        {((hitEffect && !isMyTurn) && 0 === i) && console.log(damage)}
                                         {((hitEffect && !isMyTurn) && 0 === i) && <h5><b style={damage.effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : damage.effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : damage.effectiveness === 'Ineffective' ? { color: 'rgb(216, 214, 77)' } : { color: 'white' }}>{damage.effectiveness}</b> {damage.total}</h5>}
                                     </div>
                                 )
@@ -325,7 +352,7 @@ export default function GamePlayPage() {
                                                                 <span onClick={back} style={{ marginTop: '20px' }}>* Back</span></>
                                                             :
                                                             <><span onClick={handleButtonAttack}>* Attack</span>
-                                                                <span onClick={() => { handleButtonDef(myDeck[turn].name) }}>* Def</span></>}
+                                                                <span onClick={() => { handleButtonDef(turn) }}>* Def</span></>}
                                                     </div>
                                                 </>
                                             :
@@ -336,13 +363,13 @@ export default function GamePlayPage() {
                                                 </div>
                                             </>
                                     }
-                                    <div className='book' onClick={handleButtonInstruction}><img src={bookIcon} alt="book"/></div>
+                                    <div className='book' onClick={handleButtonInstruction}><img src={bookIcon} alt="book" /></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div >
-                {instruction && <InstructionPage close={handleButtonInstruction}/>}
+                {instruction && <InstructionPage close={handleButtonInstruction} />}
             </>
         )
     }
