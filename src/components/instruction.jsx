@@ -7,7 +7,7 @@ export default function InstructionPage({ close, sight, pokemon }) {
             <div className="nav-bg" onClick={close}></div>
             <div className="nav-content pixelated-border" style={{ width: "80%", height: "70%", padding: '10px' }}>
                 <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
-                    <h2 style={{marginBottom: '30px'}}>{pokemon.name}</h2>
+                    <h2 style={{marginBottom: '30px'}}>Lv.{pokemon.level} {pokemon.name}</h2>
                     <p><b>Attack :</b> {pokemon.attack}</p>
                     <p><b>HP :</b> {pokemon.hp}</p>
                     <p><b>Def :</b> {pokemon.def}</p>
