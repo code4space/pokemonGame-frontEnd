@@ -10,6 +10,8 @@ import LoadingScreen from '../components/loading'
 import { damageDealt } from '../constant/helper'
 import bookIcon from '../assets/icon/book.png'
 import InstructionPage from '../components/instruction'
+import { SET_BATTLE_DECK } from '../store/actions/actionType'
+import targetIcon from '../assets/icon/target.png'
 
 export default function GamePlayPage() {
 
@@ -390,7 +392,8 @@ export default function GamePlayPage() {
                         </div>
                     </div>
                 </div >
-                {instruction && <InstructionPage close={handleButtonInstruction}/>}
+                {instruction && <InstructionPage close={handleButtonInstruction} />}
+                {sightTarget !== null && <InstructionPage sight={true} close={closeSight} pokemon={enemies[sightTarget]}/>}
             </>
         )
     }
