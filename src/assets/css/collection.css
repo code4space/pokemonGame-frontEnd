@@ -16,12 +16,12 @@
 
 
 .paging {
-  width: 230px;
+  width: 85%;
   margin-top: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  column-gap: 20px;
+  column-gap: 30px;
   animation-name: title-collection;
   animation-duration: 1.7s;
   position: relative;
@@ -29,16 +29,16 @@
 
 .paging .logout {
   background-color: rgb(178, 65, 244);
-  position: absolute;
+  /* position: absolute; */
 }
 
-.paging .logout:nth-child(1) {
-  left: 0;
+/* .paging .logout:nth-child(1) {
+  left: 40%;
 }
 
 .paging .logout:nth-child(3) {
   right: 0;
-}
+} */
 
 .paging .logout:active {
   box-shadow: none;

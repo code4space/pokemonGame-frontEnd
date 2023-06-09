@@ -1,6 +1,6 @@
 import { setColor } from "../constant/helper"
 
-export default function CollectionBox({ pokemon, handleButtonDetail, deck = false }) {
+export default function CollectionBox({ height, pokemon, handleButtonDetail, deck = false }) {
     function fillEmptyDeck() {
         let manyEmptyDeck = 3 - pokemon.length
         let arr = []
@@ -18,8 +18,9 @@ export default function CollectionBox({ pokemon, handleButtonDetail, deck = fals
             })
         )
     }
+
     return (
-        <div className={deck ? "box-collection deck-box" : "box-collection"}>
+        <div className={deck ? "box-collection deck-box" : "box-collection"} style={height ? {height: height} : null}>
             {pokemon.map((el, i) => {
                 return (
                     <div key={i} className="item-collection" style={el.baseExp > 307 ? { animationName: 'glow', animationDuration: '2s', animationDelay: '1s', animationIterationCount: 'infinite', backgroundColor: setColor(el.baseExp) } : { backgroundColor: setColor(el.baseExp) }} onClick={() => handleButtonDetail(i, deck)}>

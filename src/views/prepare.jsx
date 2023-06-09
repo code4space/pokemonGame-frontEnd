@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import swordIcon from '../assets/icon/sword1.png'
 import { storeMyDeck } from "../store/actions/setGameSettings";
 
-function PreparePage({deck}) {
+function PreparePage({ deck }) {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const pokemon = useSelector((state) => {
@@ -146,13 +146,13 @@ function PreparePage({deck}) {
                     <span></span>
                 </div>
                 <CollectionBox pokemon={myDeck} handleButtonDetail={handleButtonDetail} deck={true} />
-                <CollectionBox pokemon={pokemon} handleButtonDetail={handleButtonDetail} />
+                <CollectionBox pokemon={pokemon} handleButtonDetail={handleButtonDetail} height={'230px'}/>
                 <div className="paging">
-                    <button onClick={() => back(page)} className="logout" style={page < 2 ? { display: 'none' } : null}>Back</button>
+                    <button onClick={() => back(page)} className="logout" style={page < 2 ? { opacity: '0', pointerEvents: 'none' } : null}>Back</button>
                     <span>{page}</span>
-                    <button onClick={() => next(page)} className="logout" style={page === totalPage ? { display: 'none' } : null}>Next</button>
+                    <button onClick={() => next(page)} className="logout" style={page === totalPage ? { opacity: '0', pointerEvents: 'none' } : null}>Next</button>
+                    <button className="logout sort-box" onClick={sort} style={activeSort ? { backgroundColor: "#399ae7" } : { backgroundColor: "#6dbfb8" }}>Sort</button>
                 </div>
-                <button className="logout sort-box" onClick={sort} style={activeSort ? { backgroundColor: "#399ae7" } : { backgroundColor: "#6dbfb8" }}>Sort</button>
                 {activeDetail &&
                     <div className="select-detail">
                         <span className="bg-select" onClick={handleCloseButtonDetail}></span>

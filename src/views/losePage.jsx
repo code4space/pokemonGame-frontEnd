@@ -10,8 +10,6 @@ export default function LosePage() {
     const location = useLocation()
     const state = location.state;
 
-    console.log(state)
-
     useEffect(() => {
         loseSound()
         const timer = setTimeout(() => {

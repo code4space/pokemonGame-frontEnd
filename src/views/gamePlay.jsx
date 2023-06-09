@@ -11,6 +11,7 @@ import { damageDealt } from '../constant/helper'
 import bookIcon from '../assets/icon/book.png'
 import InstructionPage from '../components/instruction'
 import { SET_BATTLE_DECK } from '../store/actions/actionType'
+import targetIcon from '../assets/icon/target.png'
 
 export default function GamePlayPage() {
 
@@ -19,6 +20,8 @@ export default function GamePlayPage() {
     const [isMyTurn, setIsMyTurn] = useState(true)
     const [enemies, setEnemies] = useState(false)
     const [attackMenu, setAttackMenu] = useState(false)
+    const [sightMenu, setSightMenu] = useState(false)
+    const [sightTarget, setSightTarget] = useState(null)
     const [remainingHP, setRemainingHP] = useState([])
     const [barrier, setBarrier] = useState([])
     const [myDeck, setMyDeck] = useState([])
@@ -83,7 +86,11 @@ export default function GamePlayPage() {
     function handleButtonAttack() {
         clickSound1()
         setAttackMenu(true)
+    }
 
+    function handleButtonSight() {
+        clickSound1()
+        setSightMenu(true)
     }
 
     function attackingTarget(target) {
@@ -229,6 +236,7 @@ export default function GamePlayPage() {
 
     function back() {
         clickSound1()
+        setSightMenu(false)
         setAttackMenu(false)
     }
 
@@ -277,6 +285,14 @@ export default function GamePlayPage() {
         setInstruction(!instruction)
     }
 
+    function seeTarget (index) {
+        setSightTarget(index)
+    }
+
+    function closeSight () {
+        setSightTarget(null)
+    }
+
     if (isLoading) return <LoadingScreen />
     else {
         if (!deck.length) {
@@ -298,6 +314,7 @@ export default function GamePlayPage() {
                                 return (
                                     <div className='pokemon-img-ctrl' key={i}>
                                         <img src={el.frontView} alt="" style={((hitEffect && isMyTurn) && targetEffect === i) ? { animation: 'shake 0.4s linear 0s, hitEffect 1s linear 0s' } : null} />
+                                        {attackMenu && <img src={targetIcon} alt="target_img" onClick={() => { attackingTarget(i) }} />}
                                         <span className='hp-bar'><p>Hp.</p> <span className='hp'>
                                             <span style={{ width: `${(remainingHP[i + myDeck.length] / el.hp) * 100}%` }}></span>
                                         </span></span>
@@ -345,14 +362,20 @@ export default function GamePlayPage() {
                                                 <>
                                                     <p>Lv.{myDeck[turn]?.level} {myDeck[turn]?.name.toUpperCase()} Turn</p>
                                                     <div className='turn-opt'>
-                                                        {attackMenu ?
-                                                            <>{enemies.map((el, i) => {
-                                                                return <span key={el.id} onClick={() => attackingTarget(i)}>* Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
-                                                            })}
-                                                                <span onClick={back} style={{ marginTop: '20px' }}>* Back</span></>
-                                                            :
-                                                            <><span onClick={handleButtonAttack}>* Attack</span>
-                                                                <span onClick={() => { handleButtonDef(turn) }}>* Def</span></>}
+                                                        {attackMenu && <>{enemies.map((el, i) => {
+                                                            return <span key={el.id} onClick={() => attackingTarget(i)}>* Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
+                                                        })}
+                                                            <span onClick={back} style={{ marginTop: '20px' }}>* Back</span></>
+                                                        }
+                                                        {sightMenu && <>{enemies.map((el, i) => {
+                                                            return <span key={el.id} onClick={() => seeTarget(i)}>* Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
+                                                        })}
+                                                            <span onClick={back} style={{ marginTop: '20px' }}>* Back</span></>
+                                                        }
+                                                        {(!attackMenu && !sightMenu) && <><span onClick={handleButtonAttack}>* Attack</span>
+                                                            <span onClick={() => { handleButtonDef(turn) }}>* Def</span>
+                                                            <span onClick={handleButtonSight}>* Sight</span>
+                                                        </>}
                                                     </div>
                                                 </>
                                             :
@@ -370,6 +393,7 @@ export default function GamePlayPage() {
                     </div>
                 </div >
                 {instruction && <InstructionPage close={handleButtonInstruction} />}
+                {sightTarget !== null && <InstructionPage sight={true} close={closeSight} pokemon={enemies[sightTarget]}/>}
             </>
         )
     }

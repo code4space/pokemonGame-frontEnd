@@ -1,6 +1,15 @@
 .sort-box {
   animation: title-collection 1.5s;
   margin-top: 10px;
+  position: absolute;
+  right: 0;
+}
+
+@media only screen and (max-width: 540px) {
+  .sort-box {
+      right: auto;
+      bottom: -28px;
+  }
 }
 
 .deck-box {
@@ -18,21 +27,21 @@
   z-index: 1;
 }
 
-.paging + .logout:active,
+.paging+.logout:active,
 .select-detail button:active {
   box-shadow: none;
 }
 
 .select-detail button {
-    margin-top: 20px;
-    z-index: 2;
+  margin-top: 20px;
+  z-index: 2;
 }
 
 .bg-select {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.705);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.705);
 }
 
 .battle {
@@ -40,11 +49,19 @@
   bottom: 30px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
   animation: title-collection 1.5s;
   background-color: rgb(48, 48, 48);
   padding: 5px;
+  transition: 0.5s all ease;
+  overflow: hidden;
+  max-width: 51px;
+}
+
+
+.battle:hover {
+
+  max-width: 500px;
 }
 
 .battle:active {
@@ -61,19 +78,23 @@
 }
 
 @media only screen and (max-width:420px) {
-    .title-deck {
-        font-size: 20px;
-    }
+  .title-deck {
+    font-size: 20px;
+  }
 
-    .deck-box + .box-collection {
-      max-height: 30vh;
-    }
+  .deck-box+.box-collection {
+    max-height: 30vh;
+  }
 
-    .battle img {
-      max-width: 25px;
-    }
+  .battle {
+    max-width: 500px;
+  }
 
-    .battle p {
-      font-size: 15px;
-    }
+  .battle img {
+    max-width: 25px;
+  }
+
+  .battle p {
+    font-size: 15px;
+  }
 }

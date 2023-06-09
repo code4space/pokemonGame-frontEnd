@@ -1,13 +1,32 @@
 
 
-export default function InstructionPage({ close }) {
-    return (
+export default function InstructionPage({ close, sight, pokemon }) {
+    console.log(pokemon)
+    if (sight) return (
         <div className="nav-opt">
             <div className="nav-bg" onClick={close}></div>
-            <div className="nav-content pixelated-border" style={{width:"80%", height:"70%", padding: '10px'}}>
+            <div className="nav-content pixelated-border" style={{ width: "80%", height: "70%", padding: '10px' }}>
+                <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
+                    <h2 style={{marginBottom: '30px'}}>{pokemon.name}</h2>
+                    <p><b>Attack :</b> {pokemon.attack}</p>
+                    <p><b>HP :</b> {pokemon.hp}</p>
+                    <p><b>Def :</b> {pokemon.def}</p>
+                    <p><b>element :</b> {pokemon.type.elements.join(',')}</p>
+                    <p><b>weakness :</b> {pokemon.type.weakness.join(',')}</p>
+                    <p><b>immune :</b> {pokemon.type.immune.length > 0 ? pokemon.type.immune.join(',') : 'none'}</p>
+                </div>
+            </div>
+        </div>
+    )
+
+    else return (
+        <div className="nav-opt">
+            <div className="nav-bg" onClick={close}></div>
+            <div className="nav-content pixelated-border" style={{ width: "80%", height: "70%", padding: '10px' }}>
                 <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
                     <p><b>Attack :</b> Your pokemon will attacking the target you choose</p>
-                    <p><b>def :</b> Your Pokemon will gain a barrier based on its Defense and HP percentage.</p>
+                    <p><b>Def :</b> Your Pokemon will gain a barrier based on its Defense and HP percentage.</p>
+                    <p><b>Sight :</b> Check your opponent's stats.</p>
                     <p style={{ margin: 0 }}><b>Damage Dealt :</b></p>
                     <p style={{ marginLeft: '10px' }}>
                         * normal: just normal Damage<br />
@@ -15,7 +34,7 @@ export default function InstructionPage({ close }) {
                         * Ineffective: The damage are halved<br />
                         * immune: The damage will be 0
                     </p>
-                    <p style={{textAlign: 'center'}}><i>-- Elements effect the damage dealt --</i></p>
+                    <p style={{ textAlign: 'center' }}><i>-- Elements effect the damage dealt --</i></p>
                     <p>
                         <b>Normal:</b> weak to Fighting <br />
                         <b>Fire:</b> weak to Water, Ground, Rock<br />

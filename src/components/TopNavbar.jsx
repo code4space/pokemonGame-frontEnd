@@ -101,7 +101,7 @@ function TopNavbar({ isHard, setIsHard }) {
                 <div className="nav-content pixelated-border" style={{ maxWidth: '80vw', padding: '20px', height: '70vh', maxHeight: '60vh' }}>
                     <div style={{ overflowY: 'auto', height: '100%', width: '100%', padding: '5px' }}>
                         <h2 style={{ marginBottom: '10px' }}>CREDITS</h2>
-                        <p style={{ textAlign: 'center', marginBottom: '40px' }}>Thank you for trying my game! It was a personal project I completed in a month. While I've tried my best to fix any bugs, please
+                        <p style={{ textAlign: 'center', marginBottom: '40px' }}>Thank you for trying my game! It was a personal project I completed in two weeks. While I've tried my best to fix any bugs, please
                             let me know if you encounter any issues or have suggestions. I'll share it on GitHub soon. Your support means a lot.</p>
                         <p><b>* Disclaimer:</b> No profits are generated from this project, and all intellectual property rights and ownership of the Pokémon TCG remain with the respective owners.</p>
                         <p style={{ paddingBottom: '30px' }}><b>* Song: <br /></b> &#9836; Hyper Potions - Littleroot Town <br />&#9836; Pokemon song - Littleroot Town</p>
