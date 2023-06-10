@@ -7,6 +7,7 @@ import pokeBall from "../assets/icon/pokeball.png"
 import greatBall from "../assets/icon/greatball.png"
 import ultraBall from "../assets/icon/ultraball.png"
 import masterBall from "../assets/icon/masterball.png"
+import { SET_BATTLE_DECK } from '../store/actions/actionType'
 
 export default function WinPage() {
     const [blink, setBlink] = useState(false)
@@ -21,6 +22,7 @@ export default function WinPage() {
             setBlink(true)
         }, 5100)
 
+        dispatch({ type: SET_BATTLE_DECK, payload: [] });
         return () => clearTimeout(timer);
     }, [])
 

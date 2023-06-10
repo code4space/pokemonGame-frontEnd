@@ -51,7 +51,7 @@ export default function GamePlayPage() {
     const lose = async () => {
         let state = { isLose: true, difficulty };
         if (difficulty) {
-            const deletedPokemon = deck[Math.floor(Math.random() * 3)]
+            const deletedPokemon = deck[Math.floor(Math.random() * deck.length)]
             if (!state['pokemon']) state['pokemon'] = deletedPokemon.name
             await axios({
                 url: baseUrl + `/pokemon/${deletedPokemon.id}`,
@@ -66,8 +66,6 @@ export default function GamePlayPage() {
                     ]
                 }
             });
-
-            dispatch({ type: SET_BATTLE_DECK, payload: [] });
         }
         navigate('/play/lose', { state });
     };
@@ -145,6 +143,7 @@ export default function GamePlayPage() {
                         });
 
                         const state = { isWin: true, difficulty };
+
                         navigate('/play/win', { state });
                     } catch (err) {
                         console.log(err);
@@ -285,11 +284,11 @@ export default function GamePlayPage() {
         setInstruction(!instruction)
     }
 
-    function seeTarget (index) {
+    function seeTarget(index) {
         setSightTarget(index)
     }
 
-    function closeSight () {
+    function closeSight() {
         setSightTarget(null)
     }
 
@@ -393,7 +392,7 @@ export default function GamePlayPage() {
                     </div>
                 </div >
                 {instruction && <InstructionPage close={handleButtonInstruction} />}
-                {sightTarget !== null && <InstructionPage sight={true} close={closeSight} pokemon={enemies[sightTarget]}/>}
+                {sightTarget !== null && <InstructionPage sight={true} close={closeSight} pokemon={enemies[sightTarget]} />}
             </>
         )
     }

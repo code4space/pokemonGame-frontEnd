@@ -146,7 +146,7 @@ function PreparePage({ deck }) {
                     <span></span>
                 </div>
                 <CollectionBox pokemon={myDeck} handleButtonDetail={handleButtonDetail} deck={true} />
-                <CollectionBox pokemon={pokemon} handleButtonDetail={handleButtonDetail} height={'230px'}/>
+                <CollectionBox pokemon={pokemon} handleButtonDetail={handleButtonDetail} height={'230px'} />
                 <div className="paging">
                     <button onClick={() => back(page)} className="logout" style={page < 2 ? { opacity: '0', pointerEvents: 'none' } : null}>Back</button>
                     <span>{page}</span>

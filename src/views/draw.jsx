@@ -40,63 +40,63 @@ export default function DrawPage() {
         dispatch(getUserInfo())
     }, [])
 
-    function skip() {
+    async function skip() {
         setIsLoading(true);
 
-        axios({
-            url: baseUrl + "/skip/pokemon",
-            method: 'PATCH',
-            headers: { access_token: localStorage.getItem("access_token") }
-        })
-            .then((res) => {
-                // if (res.message !== 'Pokemon Skipped') throw new Error()
-                dispatch(getUserInfo())
-                axios({
-                    url: baseUrl + '/one/pokemon',
-                    method: "GET",
-                    headers: { access_token: localStorage.getItem('access_token') }
-                }).then((res) => {
-                    res.data.pokemon.type = res.data.pokemon.type.split(',')
-                    setPokemon(res.data.pokemon)
-                    setIsLoading(false); // Clear the loading state
-                }).catch(error => {
-                    console.log(error);
-                    setIsLoading(false); // Clear the loading state
-                });
-            }).catch((err) => {
-                console.log(err)
-                setIsLoading(false); // Clear the loading state
-            })
+        try {
+            await axios.patch(baseUrl + "/skip/pokemon", null, {
+                headers: { access_token: localStorage.getItem("access_token") }
+            });
+
+            dispatch(getUserInfo());
+
+            const response = await axios.get(baseUrl + '/one/pokemon', {
+                headers: { access_token: localStorage.getItem('access_token') }
+            });
+
+            const pokemonData = response.data.pokemon;
+            pokemonData.type = pokemonData.type.split(',');
+
+            setPokemon(pokemonData);
+            setIsLoading(false); // Clear the loading state
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false); // Clear the loading state
+        }
     }
 
-    function success(pokemon) {
+
+    async function success(pokemon) {
         setIsLoading(true);
-        Swal.fire({
-            title: `<div style="font-size:40px;">CONGRATS</div>`,
-            html: `you get <p style="margin-top:10px;">${pokemon.name}</p>`,
-            width: 600,
-            padding: '3em',
-            color: '#716add',
-            background: '#fff',
-            backdrop: `
+
+        try {
+            await Swal.fire({
+                title: `<div style="font-size:40px;">CONGRATS</div>`,
+                html: `you get <p style="margin-top:10px;">${pokemon.name}</p>`,
+                width: 600,
+                padding: '3em',
+                color: '#716add',
+                background: '#fff',
+                backdrop: `
               rgba(0,0,0,0.6)
               url(${giphy})
               left top
               no-repeat
             `
-        })
-        pokemon.type = pokemon.type.join(',')
-        axios({
-            url: baseUrl + '/pokemon',
-            method: "POST",
-            headers: { access_token: localStorage.getItem("access_token") },
-            data: pokemon
-        }).then((res) => {
-            skip()
-        }).catch(error => {
+            });
+
+            pokemon.type = pokemon.type.join(',');
+
+            await axios.post(baseUrl + '/pokemon', pokemon, {
+                headers: { access_token: localStorage.getItem("access_token") }
+            });
+
+            skip();
+        } catch (error) {
             console.log(error);
-        });
+        }
     }
+
 
     function failed() {
         Swal.fire({
@@ -111,28 +111,38 @@ export default function DrawPage() {
         })
     }
 
-    function get(ballType, pokemon) {
-        gameNotificationSound()
-        if (draw < 1 || balls[ballType] < 1) return ''
-        const baseExp = pokemon.baseExp
-        setIsLoading(true)
-        axios({
-            url: baseUrl + "/pokeball/decrease",
-            method: "patch",
-            data: { ballType },
-            headers: { access_token: localStorage.getItem("access_token") }
-        }).then(() => {
-            dispatch(getUserInfo())
-            setIsLoading(false)
-            if (drawPokemon(ballType, baseExp)) {
-                return success(pokemon)
-            } else {
-                failed()
+    async function get(ballType, pokemon) {
+        try {
+            gameNotificationSound();
+
+            if (draw < 1 || balls[ballType] < 1) {
+                return '';
             }
-        }).catch((err) => {
-            console.log(err)
-        })
+
+            const baseExp = pokemon.baseExp;
+            setIsLoading(true);
+
+            await axios.patch(baseUrl + "/pokeball/decrease", {
+                ballType: ballType
+            }, {
+                headers: {
+                    access_token: localStorage.getItem("access_token")
+                }
+            });
+
+            dispatch(getUserInfo());
+            setIsLoading(false);
+
+            if (drawPokemon(ballType, baseExp)) {
+                return success(pokemon);
+            } else {
+                failed();
+            }
+        } catch (err) {
+            console.log(err);
+        }
     }
+
 
     if (isLoading) {
         return (

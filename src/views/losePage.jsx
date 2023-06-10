@@ -2,10 +2,13 @@ import '../assets/css/losePage.css'
 import { useEffect, useState } from 'react'
 import { clickSound, loseSound } from '../components/playSound'
 import { useLocation, useNavigate, Navigate } from 'react-router-dom'
+import { SET_BATTLE_DECK } from '../store/actions/actionType'
+import { useDispatch } from 'react-redux'
 
 export default function LosePage() {
     const [blink, setBlink] = useState(false)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const location = useLocation()
     const state = location.state;
@@ -16,6 +19,8 @@ export default function LosePage() {
             setBlink(true)
         }, 5100)
 
+        
+        dispatch({ type: SET_BATTLE_DECK, payload: [] });
         return () => clearTimeout(timer);
     }, [])
 
