@@ -8,10 +8,12 @@ import greatBall from "../assets/icon/greatball.png"
 import ultraBall from "../assets/icon/ultraball.png"
 import masterBall from "../assets/icon/masterball.png"
 import { SET_BATTLE_DECK } from '../store/actions/actionType'
+import { useDispatch } from 'react-redux'
 
 export default function WinPage() {
     const [blink, setBlink] = useState(false)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const location = useLocation()
     const state = location.state;
@@ -22,6 +24,7 @@ export default function WinPage() {
             setBlink(true)
         }, 5100)
 
+        
         dispatch({ type: SET_BATTLE_DECK, payload: [] });
         return () => clearTimeout(timer);
     }, [])
