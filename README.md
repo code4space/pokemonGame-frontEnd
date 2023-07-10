@@ -1,6 +1,8 @@
 # Pokemon Gacha FrontEnd
 Game Pokemon dibuat dengan react, tools Vite, dan POKEAPI sebagai third party API nya. Game yang bertema gacha pokemon dimana pemain dapat mengoleksi pokemon sebanyak banyaknya dan mengadu pokemon jagoan di arena.
 
+<img src="./src/assets/pokemon.png"/>
+
 ## &#9997; Dibuat dengan
 
 [![React][React.js]][React-url]
