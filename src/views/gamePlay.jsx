@@ -273,7 +273,6 @@ export default function GamePlayPage() {
     }
 
     useEffect(() => {
-        console.log(difficulty)
         axios({
             url: baseUrl + `/pokemon/enemies/${difficulty}`,
             method: "GET",

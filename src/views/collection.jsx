@@ -76,14 +76,13 @@ export default function CollectionPage() {
                     <div className="paging">
                         <button onClick={() => back(page)} className="logout" style={page < 2 ? { opacity: '0', pointerEvents: 'none' } : null}>Back</button>
                         <span>{page}</span>
-                        <button onClick={() => next(page)} className="logout" style={page === totalPage ? { opacity: '0', pointerEvents: 'none' } : null}>Next</button>
+                        <button onClick={() => next(page)} className="logout" style={(page === totalPage) ? { opacity: '0', pointerEvents: 'none' } : null}>Next</button>
                     </div>
                 </div>
                 {activeDetail &&
                     <div className="detail-collection" onClick={handleCloseButtonDetail}>
                         <CardDetail pokemon={pokemon[selectedPokemon]} />
                     </div>}
-
             </>
         )
     }

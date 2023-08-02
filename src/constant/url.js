@@ -1,1 +1,1 @@
-export const baseUrl = 'http://localhost:3001'
+export const baseUrl = 'https://pokemon-game-back-end-no-sql.vercel.app'
