@@ -7,8 +7,8 @@
 
 @media only screen and (max-width: 540px) {
   .sort-box {
-      right: auto;
-      bottom: -28px;
+    right: auto;
+    bottom: -28px;
   }
 }
 
@@ -52,25 +52,28 @@
   gap: 10px;
   animation: title-collection 1.5s;
   background-color: rgb(48, 48, 48);
-  padding: 5px;
-  transition: 0.5s all ease;
+  transition: 0.1s all ease;
   overflow: hidden;
-  max-width: 51px;
+  padding: 10px;
 }
 
-
 .battle:hover {
+  box-shadow: 2px 4px 0 rgba(0, 0, 0, 0.7),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+    inset 2px 2px 0 rgba(0, 0, 0, 0.2);
 
-  max-width: 500px;
+  bottom: 32px;
+
+  background-color: rgb(56, 56, 56);
 }
 
 .battle:active {
-  box-shadow: none;
-}
+  box-shadow: 2px 0px 0 rgba(0, 0, 0, 0.7),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+    inset 2px 2px 0 rgba(0, 0, 0, 0.2);
 
-.battle img {
-  max-width: 40px;
-  max-height: 40px;
+
+  bottom: 30px;
 }
 
 .battle p {

@@ -17,7 +17,7 @@ export default function CollectionPage() {
     const totalPokemon = useSelector((state) => {
         return state.PokemonReducer.totalPokemon
     })
-    const totalPage = Math.ceil(totalPokemon / 50)
+    const totalPage = Math.ceil(totalPokemon / 40)
     const [activeDetail, setActiveDetail] = useState(false)
     const [selectedPokemon, setSelectedPokemon] = useState(null)
     const [activeSort, setActiveSort] = useState(false)

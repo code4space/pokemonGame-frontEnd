@@ -18,7 +18,7 @@ export default function LoginPage() {
   function login(e) {
     e.preventDefault();
     axios({
-      url: baseUrl + "/login",
+      url: baseUrl + "/user/login",
       method: "POST",
       data: {
         username: user.username,
