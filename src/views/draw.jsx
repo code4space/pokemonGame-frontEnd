@@ -12,7 +12,6 @@ import { getUserInfo } from "../store/actions/fetchUser"
 import LoadingScreen from "../components/loading"
 import Swal from "sweetalert2"
 import giphy from "../assets/icon/giphy.gif"
-import { drawPokemon } from "../constant/helper"
 
 export default function DrawPage() {
     const [pokemon, setPokemon] = useState({})
@@ -61,50 +60,6 @@ export default function DrawPage() {
         } finally {
             setIsLoading(false)
         }
-    }
-
-
-    async function success(pokemon) {
-        setIsLoading(true);
-
-        try {
-            await Swal.fire({
-                title: `<div style="font-size:40px;">CONGRATS</div>`,
-                html: `you get <p style="margin-top:10px;">${pokemon.name}</p>`,
-                width: 600,
-                padding: '3em',
-                color: '#716add',
-                background: '#fff',
-                backdrop: `
-              rgba(0,0,0,0.6)
-              url(${giphy})
-              left top
-              no-repeat
-            `
-            });
-
-            await axios.post(baseUrl + '/pokemon', pokemon, {
-                headers: { access_token: localStorage.getItem("access_token") }
-            });
-
-            skip();
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-
-    function failed() {
-        Swal.fire({
-            title: 'FAILED :(',
-            showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-            },
-            hideClass: {
-                popup: 'animate__animated animate__fadeOutUp'
-            },
-            timer: 3000
-        })
     }
 
     async function get(ballType, pokemon) {
@@ -162,11 +117,6 @@ export default function DrawPage() {
                 }
             })
 
-            // if (drawPokemon(ballType, baseExp)) {
-            //     return success(pokemon);
-            // } else {
-            //     failed();
-            // }
         } catch (err) {
             console.log(err);
         } finally {

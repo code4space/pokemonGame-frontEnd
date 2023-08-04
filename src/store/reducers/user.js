@@ -1,6 +1,7 @@
 import { SET_IS_HARD, USER, SET_BATTLE_DECK } from "../actions/actionType";
 
 const initialState = {
+    username: '',
     gacha: null,
     balls: {},
     draw: null,
@@ -8,21 +9,22 @@ const initialState = {
     deck: []
 }
 
-function UserReducer (state = initialState, action) {
+function UserReducer(state = initialState, action) {
     switch (action.type) {
         case USER:
             return {
                 ...state,
                 gacha: action.payload.gacha,
                 balls: action.payload.balls,
-                draw: action.payload.draw
+                draw: action.payload.draw,
+                username: action.payload.username,
             }
-        case SET_IS_HARD: 
+        case SET_IS_HARD:
             return {
                 ...state,
                 isHard: action.isHard
             }
-        case SET_BATTLE_DECK: 
+        case SET_BATTLE_DECK:
             return {
                 ...state,
                 deck: action.payload
