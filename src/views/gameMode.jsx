@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom"
 import { clickSound } from "../components/playSound"
-import { joinRoom } from "../constant/socketFunction"
 import { useSelector } from "react-redux"
 
 
@@ -11,6 +10,8 @@ export default function GameModePage() {
         return state.UserReducer.username
     })
 
+    console.log(username)
+
     function Move(route) {
         clickSound()
         return navigate(route)
@@ -18,7 +19,6 @@ export default function GameModePage() {
 
     function handlePvP(route) {
         clickSound()
-        joinRoom(username)
         return navigate(route)
     }
     return (
