@@ -72,7 +72,7 @@ export default function CollectionPage() {
                         <h1>COLLECTION</h1>
                         <button className="logout" onClick={sort} style={activeSort ? { backgroundColor: "#399ae7" } : { backgroundColor: "#6dbfb8" }}>Sort</button>
                     </div>
-                    <CollectionBox pokemon={pokemon} handleButtonDetail={handleButtonDetail}/>
+                    <CollectionBox pokemon={pokemon} handleButtonDetail={handleButtonDetail} />
                     <div className="paging">
                         <button onClick={() => back(page)} className="logout" style={page < 2 ? { opacity: '0', pointerEvents: 'none' } : null}>Back</button>
                         <span>{page}</span>
