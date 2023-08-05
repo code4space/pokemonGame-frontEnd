@@ -61,7 +61,7 @@ export default function HomePage() {
                 <img src={pikachu} alt="pikachu_gif" className="pikachu-gif left-pikachu-position" />
                 <img src={logoPokemon} alt="pokemon_logo" className="logoPokemon" />
                 <div className="button-lobby-ctrl">
-                    <div className="pixelated-border pixelated-border-effect button-lobby" onClick={() => { Move('/prepare') }}>Play</div>
+                    <div className="pixelated-border pixelated-border-effect button-lobby" onClick={() => { Move('/mode') }}>Play</div>
                     <div className="pixelated-border pixelated-border-effect button-lobby" onClick={() => { Move('/collection') }}>
                         {notification(totalPokemon)}
                         Collection

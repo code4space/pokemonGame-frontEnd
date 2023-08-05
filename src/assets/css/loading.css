@@ -1,9 +1,42 @@
+:root {
+    --delay: 0;
+    --yellow1: #f7e901;
+    --brown1: #7e5701;
+}
+
 .loading h1 {
     margin-top: 40px;
-    color: #f7e901;
-    -webkit-text-stroke: 1px #7e5701;
+    color: var(--yellow1);
+    -webkit-text-stroke: 1px var(--brown1);
     font-size: 40px;
     font-weight: bolder;
+}
+
+.loading.find svg {
+    margin-top: 10px;
+}
+
+#dot1,#dot2,#dot3 {
+    transform: translateX(-100%);
+    animation: loading 2s ease-in-out forwards infinite;
+    animation-delay: calc(var(--delay) * 90ms);
+}
+
+@keyframes loading {
+    0% {
+        scale: 1;
+        transform: translateX(-100%);
+    }
+
+    50% {
+        scale: 1;
+        transform: translateX(0%);
+    }
+
+    100% {
+        scale: 1;
+        transform: translateX(100%);
+    }
 }
 
 @media only screen and (max-width:500px) {

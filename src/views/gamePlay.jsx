@@ -116,32 +116,20 @@ export default function GamePlayPage() {
                         const id = deck.map(el => el.id);
 
                         await axios({
-                            url: baseUrl + '/pokemon/levelup',
-                            method: 'PATCH',
-                            headers: { access_token: localStorage.getItem('access_token') },
-                            data: { pokemonId: id, upLevel: difficulty ? 2 : 1 }
-                        });
-
-                        await axios({
-                            url: baseUrl + '/pokeball/increase',
+                            url: baseUrl + `/user/reward`,
                             method: 'PATCH',
                             headers: { access_token: localStorage.getItem('access_token') },
                             data: {
+                                pokemonId: id, upLevel: difficulty ? 2 : 1,
                                 listBall: [
                                     { ball: 'pokeball', increase: difficulty ? 3 : 5 },
                                     { ball: 'greatball', increase: difficulty ? 4 : 3 },
                                     { ball: 'ultraball', increase: difficulty ? 2 : 1 },
                                     { ball: 'masterball', increase: difficulty ? 1 : 0 },
-                                ]
+                                ],
+                                drawAmount: difficulty ? 7 : 4
                             }
-                        });
-
-                        await axios({
-                            url: baseUrl + `/draw/increase/${difficulty ? 7 : 4}`,
-                            method: 'PATCH',
-                            headers: { access_token: localStorage.getItem('access_token') }
-                        });
-
+                        })
                         const state = { isWin: true, difficulty };
 
                         navigate('/play/win', { state });

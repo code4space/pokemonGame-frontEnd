@@ -12,7 +12,6 @@ import { getUserInfo } from "../store/actions/fetchUser"
 import LoadingScreen from "../components/loading"
 import Swal from "sweetalert2"
 import giphy from "../assets/icon/giphy.gif"
-import { drawPokemon } from "../constant/helper"
 
 export default function DrawPage() {
     const [pokemon, setPokemon] = useState({})
@@ -27,11 +26,10 @@ export default function DrawPage() {
 
     useEffect(() => {
         axios({
-            url: baseUrl + '/one/pokemon',
+            url: baseUrl + '/pokemon/draw',
             method: "GET",
             headers: { access_token: localStorage.getItem('access_token') }
         }).then((res) => {
-            res.data.pokemon.type = res.data.pokemon.type.split(',')
             setPokemon(res.data.pokemon)
             setIsLoading(false)
         }).catch(error => {
@@ -44,71 +42,24 @@ export default function DrawPage() {
         setIsLoading(true);
 
         try {
-            await axios.patch(baseUrl + "/skip/pokemon", null, {
+            await axios.patch(baseUrl + "/pokemon/skip", null, {
                 headers: { access_token: localStorage.getItem("access_token") }
             });
 
             dispatch(getUserInfo());
 
-            const response = await axios.get(baseUrl + '/one/pokemon', {
+            const response = await axios.get(baseUrl + '/pokemon/draw', {
                 headers: { access_token: localStorage.getItem('access_token') }
             });
 
             const pokemonData = response.data.pokemon;
-            pokemonData.type = pokemonData.type.split(',');
 
             setPokemon(pokemonData);
-            setIsLoading(false); // Clear the loading state
         } catch (error) {
             console.log(error);
-            setIsLoading(false); // Clear the loading state
+        } finally {
+            setIsLoading(false)
         }
-    }
-
-
-    async function success(pokemon) {
-        setIsLoading(true);
-
-        try {
-            await Swal.fire({
-                title: `<div style="font-size:40px;">CONGRATS</div>`,
-                html: `you get <p style="margin-top:10px;">${pokemon.name}</p>`,
-                width: 600,
-                padding: '3em',
-                color: '#716add',
-                background: '#fff',
-                backdrop: `
-              rgba(0,0,0,0.6)
-              url(${giphy})
-              left top
-              no-repeat
-            `
-            });
-
-            pokemon.type = pokemon.type.join(',');
-
-            await axios.post(baseUrl + '/pokemon', pokemon, {
-                headers: { access_token: localStorage.getItem("access_token") }
-            });
-
-            skip();
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-
-    function failed() {
-        Swal.fire({
-            title: 'FAILED :(',
-            showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-            },
-            hideClass: {
-                popup: 'animate__animated animate__fadeOutUp'
-            },
-            timer: 3000
-        })
     }
 
     async function get(ballType, pokemon) {
@@ -119,27 +70,57 @@ export default function DrawPage() {
                 return '';
             }
 
-            const baseExp = pokemon.baseExp;
             setIsLoading(true);
 
-            await axios.patch(baseUrl + "/pokeball/decrease", {
-                ballType: ballType
-            }, {
-                headers: {
-                    access_token: localStorage.getItem("access_token")
+            await axios({
+                method: 'POST',
+                url: baseUrl + `/pokemon/gacha`,
+                headers: { access_token: localStorage.getItem("access_token") },
+                data: { ...pokemon, ballType }
+            }).then(async (res) => {
+                if (res.data.status) {
+                    Swal.fire({
+                        title: `<div style="font-size:40px;">CONGRATS</div>`,
+                        html: `you get <p style="margin-top:10px;">${pokemon.name}</p>`,
+                        width: 600,
+                        padding: '3em',
+                        color: '#716add',
+                        background: '#fff',
+                        backdrop: `
+                      rgba(0,0,0,0.6)
+                      url(${giphy})
+                      left top
+                      no-repeat
+                    `
+                    });
+
+                    dispatch(getUserInfo());
+
+                    const response = await axios.get(baseUrl + '/pokemon/draw', {
+                        headers: { access_token: localStorage.getItem('access_token') }
+                    });
+
+                    const pokemonData = response.data.pokemon;
+                    setPokemon(pokemonData);
+                } else {
+                    dispatch(getUserInfo());
+                    Swal.fire({
+                        title: 'FAILED :(',
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        },
+                        timer: 3000
+                    })
                 }
-            });
+            })
 
-            dispatch(getUserInfo());
-            setIsLoading(false);
-
-            if (drawPokemon(ballType, baseExp)) {
-                return success(pokemon);
-            } else {
-                failed();
-            }
         } catch (err) {
             console.log(err);
+        } finally {
+            setIsLoading(false)
         }
     }
 

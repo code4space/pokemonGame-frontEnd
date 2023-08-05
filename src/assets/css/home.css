@@ -9,6 +9,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   background-color: rgb(255, 140, 39);
+  overflow: hidden;
 }
 
 .logoPokemon {

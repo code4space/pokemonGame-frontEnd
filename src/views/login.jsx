@@ -18,7 +18,7 @@ export default function LoginPage() {
   function login(e) {
     e.preventDefault();
     axios({
-      url: baseUrl + "/login",
+      url: baseUrl + "/user/login",
       method: "POST",
       data: {
         username: user.username,
@@ -26,7 +26,7 @@ export default function LoginPage() {
       },
     })
       .then((res) => {
-        if (res.statusText !== "OK") throw new Error("something went wrong");
+        if (res.status !== 200) throw new Error("something went wrong");
         return res.data;
       })
       .then((data) => {
@@ -46,7 +46,7 @@ export default function LoginPage() {
   function register(e) {
     clickSound();
     axios({
-      url: baseUrl + "/register",
+      url: baseUrl + "/user/register",
       method: "POST",
       data: {
         username: user.username,
@@ -54,7 +54,8 @@ export default function LoginPage() {
       },
     })
       .then((res) => {
-        if (res.statusText !== "Created") {
+        console.log(res)
+        if (res.status !== 201) {
           throw new Error("something went wrong");
         }
         Swal.fire({

@@ -160,7 +160,6 @@ function PreparePage({ deck }) {
                         {isDeck ? <button className="logout" onClick={discard}>Discard</button> : <button className="logout" onClick={addToMyDeck} style={{ backgroundColor: 'rgb(112, 157, 255)' }}>Select</button>}
                     </div>}
                 <button className="logout battle" onClick={handleButtonBattle}>
-                    <img src={swordIcon}></img>
                     <p>Battle</p>
                 </button>
             </div>

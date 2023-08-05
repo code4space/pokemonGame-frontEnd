@@ -111,6 +111,13 @@
     border-radius: 5px;
 }
 
+
+@media only screen and (max-height: 635px) {
+    .card-detail {
+        height: 550px;
+    }
+}
+
 @media only screen and (max-width: 500px) {
     .card-detail {
         width: 300px;
@@ -218,4 +225,4 @@
         font-size: 12px;
     }
 
-} 
+}
