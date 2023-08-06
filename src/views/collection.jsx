@@ -80,7 +80,8 @@ export default function CollectionPage() {
                     </div>
                 </div>
                 {activeDetail &&
-                    <div className="detail-collection" onClick={handleCloseButtonDetail}>
+                    <div className="detail-collection">
+                        <div className="nav-bg" onClick={handleCloseButtonDetail}></div>
                         <CardDetail pokemon={pokemon[selectedPokemon]} />
                     </div>}
             </>

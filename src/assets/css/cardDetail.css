@@ -1,228 +1,319 @@
+:root {
+  --border-card: white;
+}
+
 .card-detail {
-    width: 400px;
-    height: 580px;
-    background-color: white;
-    border-radius: 10px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hiden;
-    position: relative;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  width: 400px;
+  height: 580px;
+  position: relative;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+  border-radius: 10px;
+}
+
+.front-card,
+.back-card {
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+  position: absolute;
+  border-radius: 10px;
+}
+
+.front-card {
+  background-color: white;
+  padding: 20px;
+}
+
+.back-card {
+  transform: rotateY(180deg) !important;
+  background-color: var(--border-card);
+  overflow: hidden;
+}
+
+.back-card .middle {
+  position: absolute;
+  background-color: white;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  margin-top: 50px;
+  width: 100%;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.back-card .bottom {
+  position: absolute;
+  background-color: var(--border-card);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+}
+
+.back-card .back-detail {
+  text-shadow: 0.5px 0.5px 1px black;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-align: right;
+  cursor: pointer;
+  color: rgb(201, 201, 201);
+  transition: 0.2s;
+  position: absolute;
+  right: 7px;
+  top: 10px;
+}
+
+.back-card .title {
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin-top: 10px;
+}
+
+.rotate {
+  transform: rotateY(180deg) !important;
+}
+
+.transition {
+  transition: transform 1.3s;
+  pointer-events: none;
 }
 
 .color-rank {
-    position: absolute;
-    width: 100%;
-    height: 34%;
-    top: 0;
-    left: 0;
-    border-top-left-radius: 7px;
-    border-top-right-radius: 7px;
-    z-index: 9;
-    padding: 10px;
+  position: absolute;
+  width: 100%;
+  height: 34%;
+  top: 0;
+  left: 0;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  z-index: 9;
+  padding: 10px;
 }
 
-.color-rank span {
-    color: white;
-    text-shadow: 2px 2px 1px black;
+.back-card {
+  text-shadow: 0.5px 0.5px 1px black;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-align: right;
+  cursor: pointer;
+  color: rgb(49, 49, 49);
+  transition: 0.2s;
+}
+
+.color-rank p {
+  text-shadow: 0.5px 0.5px 1px black;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-align: right;
+  cursor: pointer;
+  color: rgb(201, 201, 201);
+  transition: 0.2s;
+}
+
+.color-rank p:hover,
+.back-card p:first-child:hover {
+  color: white;
 }
 
 .pokemon-img {
-    margin-top: 89px;
-    width: 160px;
-    height: 160px;
-    background-color: white;
-    z-index: 10;
-    border-radius: 12px;
-    padding: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4);
+  margin-top: 89px;
+  width: 160px;
+  height: 160px;
+  background-color: white;
+  z-index: 10;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.4);
+  transform: translateZ(20px);
+  backface-visibility: hidden;
 }
 
 .card-detail h2,
 .card-detail h3 {
-    z-index: 10;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  z-index: 10;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .card-detail h2 {
-    color: rgb(59, 59, 59);
-    margin-top: 10px;
+  color: rgb(59, 59, 59);
 }
 
 .card-detail h3 {
-    color: rgb(98, 98, 98);
-    font-size: 0.9em;
-    margin-top: 4px;
+  font-size: 0.9em;
+  margin-top: 15px;
 }
 
 .stat {
-    margin-top: 30px;
-    display: flex;
-    width: 100%;
-    justify-content: space-around;
+  margin-top: 30px;
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 7px;
 }
 
 .stat span {
-    display: flex;
-    align-items: center;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-weight: bolder;
-    font-size: 19px;
-    color: rgb(60, 60, 60);
+  display: flex;
+  align-items: center;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: bolder;
+  font-size: 19px;
+  color: rgb(60, 60, 60);
 }
 
 .stat img {
-    max-width: 35px;
-    margin-right: 5px;
+  max-width: 35px;
+  margin-right: 5px;
 }
 
-.card-detail p {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    text-align: center;
-    margin-top: 30px;
-    color: rgb(56, 56, 56);
-    font-size: 15px;
-    height: 90px;
-    overflow: auto;
+.card-detail .summary {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-align: center;
+  margin-top: 20px;
+  color: rgb(56, 56, 56);
+  font-size: 15px;
+  height: 90px;
+  overflow: auto;
 }
 
 .type {
-    position: absolute;
-    bottom: 15px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    column-gap: 20px;
+  position: absolute;
+  bottom: 15px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  column-gap: 20px;
+  transform: translateZ(20px);
+  backface-visibility: hidden;
 }
 
 .type span {
-    border: 3px solid black;
-    font-size: 10px;
-    padding: 7px;
-    width: 100px;
-    text-align: center;
-    color: white;
-    text-shadow: 1px 1px 0 rgb(0, 0, 0),
-        -1px -1px 0 rgb(0, 0, 0),
-        1px -1px 0 rgb(0, 0, 0),
-        -1px 1px 0 rgb(0, 0, 0);
-    border-radius: 5px;
+  border: 3px solid black;
+  font-size: 10px;
+  padding: 7px;
+  width: 100px;
+  text-align: center;
+  color: white;
+  text-shadow: 1px 1px 0 rgb(0, 0, 0), -1px -1px 0 rgb(0, 0, 0),
+    1px -1px 0 rgb(0, 0, 0), -1px 1px 0 rgb(0, 0, 0);
+  border-radius: 5px;
 }
 
-
 @media only screen and (max-height: 635px) {
-    .card-detail {
-        height: 550px;
-    }
+  .card-detail {
+    height: 550px;
+  }
 }
 
 @media only screen and (max-width: 500px) {
-    .card-detail {
-        width: 300px;
-        height: 580px;
-    }
+  .card-detail {
+    width: 300px;
+    height: 580px;
+  }
 }
 
 @media only screen and (max-width: 340px) {
-    .card-detail {
-        width: 90vw;
-        height: 70vh;
-        max-width: 290px;
-        overflow: auto;
-    }
+  .card-detail {
+    width: 90vw;
+    height: 70vh;
+    max-width: 290px;
+  }
 
-    .card-detail .pokemon-img {
-        width: 120px;
-        height: 120px;
-        margin-top: 10vh;
-    }
+  .card-detail .pokemon-img {
+    width: 120px;
+    height: 120px;
+    margin-top: 10vh;
+  }
 
-    .card-detail h2 {
-        font-size: 18px;
-    }
+  .card-detail h2 {
+    font-size: 18px;
+  }
 
-    .card-detail .stat img {
-        max-width: 20px;
-    }
+  .card-detail .stat img {
+    max-width: 20px;
+  }
 }
 
 @media only screen and (max-width: 1000px) {
-    .card-ctrl {
-        width: 250px;
-        height: 450px;
-    }
+  .card-ctrl {
+    width: 250px;
+    height: 450px;
+  }
 
-    .card-ctrl .pokemon-img {
-        width: 120px;
-        height: 120px;
-        margin-top: 70px;
-    }
+  .card-ctrl .pokemon-img {
+    width: 120px;
+    height: 120px;
+    margin-top: 70px;
+  }
 
-    .card-ctrl h2 {
-        font-size: 18px;
-    }
+  .card-ctrl h2 {
+    font-size: 18px;
+  }
 
-    .card-ctrl h3 {
-        font-size: 12px;
-    }
+  .card-ctrl h3 {
+    font-size: 12px;
+  }
 
-    .stat span {
-        font-size: 14px;
-    }
+  .stat span {
+    font-size: 14px;
+  }
 
-    .card-ctrl .stat img {
-        max-width: 26px;
-        max-width: 26px;
-    }
+  .card-ctrl .stat img {
+    max-width: 26px;
+    max-width: 26px;
+  }
 
-    .card-detail p {
-        font-size: 12px;
-        margin-top: 12px;
-        height: 10vh;
-    }
+  .card-detail p {
+    font-size: 12px;
+    margin-top: 12px;
+    height: 10vh;
+  }
 
-    .card-ctrl .stat {
-        margin-top: 15px;
-    }
+  .card-ctrl .stat {
+    margin-top: 15px;
+  }
 }
 
 ::-webkit-scrollbar {
-    background-color: transparent;
-    width: 5px;
+  background-color: transparent;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: rgba(122, 122, 122, 0.267);
-    border-radius: 5px;
+  background-color: rgba(122, 122, 122, 0.267);
+  border-radius: 5px;
 }
 
 @media only screen and (max-width: 360px) {
-    .draw-container {
-        column-gap: 7px;
-    }
+  .draw-container {
+    column-gap: 7px;
+  }
 
-    .card-ctrl {
-        width: 200px;
-        height: 450px;
-    }
+  .card-ctrl {
+    width: 200px;
+    height: 450px;
+  }
 
-    .card-ctrl .type {
-        gap: 10px;
-    }
+  .card-ctrl .type {
+    gap: 10px;
+  }
 
-    .card-ctrl .type span {
-        max-width: 80px;
-    }
+  .card-ctrl .type span {
+    max-width: 80px;
+  }
 
-    .card-ctrl .stat img {
-        max-width: 20px;
-        max-width: 20px;
-    }
+  .card-ctrl .stat img {
+    max-width: 20px;
+    max-width: 20px;
+  }
 
-    .card-ctrl .stat span {
-        font-size: 12px;
-    }
-
+  .card-ctrl .stat span {
+    font-size: 12px;
+  }
 }
