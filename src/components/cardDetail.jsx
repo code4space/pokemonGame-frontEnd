@@ -1,6 +1,7 @@
 import sword from '../assets/icon/sword.png'
 import health from '../assets/icon/health.png'
 import shield from '../assets/icon/shield.png'
+import Star from '../assets/icon/star.png'
 import fist from '../assets/icon/power.png'
 import { setColor, styleType } from '../constant/helper'
 import { useEffect, useRef, useState } from 'react'
@@ -40,6 +41,21 @@ export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
         return result
     }
 
+    function removeDuplicates(arr) {
+        if (!arr) return []
+        const uniqueValues = [];
+        const seenValues = {};
+
+        for (const value of arr) {
+            if (!seenValues[value]) {
+                seenValues[value] = true;
+                uniqueValues.push(value);
+            }
+        }
+
+        return uniqueValues;
+    }
+
     return (
         <div className={cardClass()} ref={cardRef}>
             <div className="front-card">
@@ -62,28 +78,47 @@ export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
             </div>
             <div className="back-card" style={{ '--border-card': setColor(baseExp) }}>
                 <p onClick={detailButton} className='back-detail'>Back &#8644;</p>
-                <div className="middle">
-                    <p className='title'>Stats</p>
-                    <div className="stat">
-                        <span>
-                            <img src={sword} alt="atk" />: {attack}
-                        </span>
-                        <span>
-                            <img src={health} alt="health" />: {hp}
-                        </span>
-                        <span>
-                            <img src={shield} alt="def" />: {def}
-                        </span>
-                        <span>
-                            <img src={fist} alt="power" />: {power}
-                        </span>
+                <div className='back-content'>
+                    <div className="power">
+                        <img src={fist} alt="fist" />
+                        <span>{power}</span>
+                    </div>
+                    <div className="stat-group">
+                        <div className="stat">
+                            <img src={sword} alt="sword" />
+                            <p>Attack</p>
+                            <span></span>
+                            <p>{attack}</p>
+                        </div>
+                        <div className="stat">
+                            <img src={health} alt="health" />
+                            <p>HP</p>
+                            <span></span>
+                            <p>{hp}</p>
+                        </div>
+                        <div className="stat">
+                            <img src={shield} alt="shield" />
+                            <p>Defense</p>
+                            <span></span>
+                            <p>{def}</p>
+                        </div>
+                    </div>
+                    <p>Next Evolution : none</p>
+                    <p className='weakness'>Weakness : {removeDuplicates(type?.weakness).map((el, i) => {
+                        return <span key={i} style={{ backgroundColor: styleType(el, 'background'), borderColor: styleType(el, 'border') }}>{el}</span>
+                    })}</p>
+                    <div className="bottom">
+                        <div className="star">
+                            {new Array(star).map((el) => {
+                                <img src={Star} alt="star" key={el}/>
+                            })}
+                        </div>
+                        <div className="evolve">
+                            <i>Need more star to evolve</i>
+                            <button>Evolve</button>
+                        </div>
                     </div>
                 </div>
-                {/* <div className="bottom">
-                </div>
-                <p>star</p>
-                <p>weakness</p>
-                <p>evolve to</p> */}
             </div>
         </div>
     );
