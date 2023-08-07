@@ -3,16 +3,18 @@ import health from '../assets/icon/health.png'
 import shield from '../assets/icon/shield.png'
 import Star from '../assets/icon/star.png'
 import fist from '../assets/icon/power.png'
-import { setColor, styleType } from '../constant/helper'
+import { calculateMaximumStat, setColor, styleType } from '../constant/helper'
 import { useEffect, useRef, useState } from 'react'
 import VanillaTilt from 'vanilla-tilt'
 import LoadingScreen from './loading'
 
 export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
-    const { img2, name, power, attack, hp, def, summary, baseExp, type, star, } = pokemon;
+    const { img2, name, power, attack, hp, def, summary, baseExp, type, star, evolves_name, base_stat } = pokemon;
     const cardRef = useRef(null);
     const [detail, setDetail] = useState(false)
     const [rotate, setRotate] = useState(false)
+
+    console.log(pokemon, '==')
 
     function detailButton() {
         setDetail(!detail)
@@ -56,11 +58,19 @@ export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
         return uniqueValues;
     }
 
+    function canEvolve(name, star) {
+        if (!name) return "Evolve not available"
+        else {
+            if (star === 2) return 'Ready to evolve'
+            else return 'Need more star to evolve'
+        }
+    }
+
     return (
         <div className={cardClass()} ref={cardRef}>
             <div className="front-card">
                 {img2 && <img src={img2} alt="pokemon_pic" className="pokemon-img" />}
-                <h3 style={{ color: setColor(baseExp) }}>Level {pokemon.level}</h3>
+                <h3 style={{ color: setColor(baseExp) }}>Level {!cardCtrl ? `${pokemon.level}/${star * 30}` : '1'}</h3>
                 <h2>{name}</h2>
                 <p className='summary'>{summary}</p>
                 <div className='type'>
@@ -81,40 +91,40 @@ export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
                 <div className='back-content'>
                     <div className="power">
                         <img src={fist} alt="fist" />
-                        <span>{power}</span>
+                        <span>{Math.floor(power)}</span>
                     </div>
                     <div className="stat-group">
                         <div className="stat">
                             <img src={sword} alt="sword" />
                             <p>Attack</p>
-                            <span></span>
-                            <p>{attack}</p>
+                            <span style={{ '--stat': calculateMaximumStat(base_stat?.attack ?? attack, 'attack') }}></span>
                         </div>
                         <div className="stat">
                             <img src={health} alt="health" />
                             <p>HP</p>
-                            <span></span>
-                            <p>{hp}</p>
+                            <span style={{ '--stat': calculateMaximumStat(base_stat?.hp ?? hp, 'hp') }} ></span>
                         </div>
                         <div className="stat">
                             <img src={shield} alt="shield" />
                             <p>Defense</p>
-                            <span></span>
-                            <p>{def}</p>
+                            <span style={{ '--stat': calculateMaximumStat(base_stat?.def ?? def, 'def') }}></span>
                         </div>
                     </div>
-                    <p>Next Evolution : none</p>
+                    <p>Next Evolution : {evolves_name ? evolves_name : 'none'}</p>
                     <p className='weakness'>Weakness : {removeDuplicates(type?.weakness).map((el, i) => {
                         return <span key={i} style={{ backgroundColor: styleType(el, 'background'), borderColor: styleType(el, 'border') }}>{el}</span>
                     })}</p>
                     <div className="bottom">
                         <div className="star">
-                            {new Array(star).map((el) => {
-                                <img src={Star} alt="star" key={el}/>
+                            {Array.from({ length: star }, (_, index) => index).map((el) => {
+                                return <img src={Star} alt="star" key={el} />
+                            })}
+                            {Array.from({ length: evolves_name ? 2 - star : 5 - star }, (_, index) => index).map((el) => {
+                                return <img src={Star} alt="star" key={el} className='star-off' />
                             })}
                         </div>
                         <div className="evolve">
-                            <i>Need more star to evolve</i>
+                            <i>{canEvolve(evolves_name, star)}</i>
                             <button>Evolve</button>
                         </div>
                     </div>
