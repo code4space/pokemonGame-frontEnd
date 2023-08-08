@@ -10,7 +10,6 @@ import LoadingScreen from '../components/loading'
 import { damageDealt } from '../constant/helper'
 import bookIcon from '../assets/icon/book.png'
 import InstructionPage from '../components/instruction'
-import { SET_BATTLE_DECK } from '../store/actions/actionType'
 import targetIcon from '../assets/icon/target.png'
 
 export default function GamePlayPage() {
@@ -48,6 +47,8 @@ export default function GamePlayPage() {
     })
     const dispatch = useDispatch();
 
+
+    console.log(deck)
     const lose = async () => {
         let state = { isLose: true, difficulty };
         if (difficulty) {
@@ -113,6 +114,8 @@ export default function GamePlayPage() {
                 setRemainingHP(temp)
                 if (tempEnemy.length < 1) {
                     try {
+                        const state = { isWin: true, difficulty };
+                        navigate('/play/win', { state });
                         const id = deck.map(el => el.id);
 
                         await axios({
@@ -130,9 +133,6 @@ export default function GamePlayPage() {
                                 drawAmount: difficulty ? 7 : 4
                             }
                         })
-                        const state = { isWin: true, difficulty };
-
-                        navigate('/play/win', { state });
                     } catch (err) {
                         console.log(err);
                     }
@@ -369,7 +369,7 @@ export default function GamePlayPage() {
                                             <>
                                                 <p>ENEMY turn</p>
                                                 <div className='turn-opt'>
-                                                    <span>{enemies[turn - myDeck.length].name} attacking...</span>
+                                                    <span>{enemies[turn - myDeck.length]?.name} attacking...</span>
                                                 </div>
                                             </>
                                     }

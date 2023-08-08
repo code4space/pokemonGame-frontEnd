@@ -76,7 +76,7 @@ export default function DrawPage() {
                 method: 'POST',
                 url: baseUrl + `/pokemon/gacha`,
                 headers: { access_token: localStorage.getItem("access_token") },
-                data: { ...pokemon, ballType }
+                data: { ...pokemon, ballType, type: pokemon.type.elements }
             }).then(async (res) => {
                 if (res.data.status) {
                     Swal.fire({

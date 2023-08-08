@@ -7,14 +7,17 @@ import { calculateMaximumStat, setColor, styleType } from '../constant/helper'
 import { useEffect, useRef, useState } from 'react'
 import VanillaTilt from 'vanilla-tilt'
 import LoadingScreen from './loading'
+import axios from 'axios'
+import { baseUrl } from '../constant/url'
 
 export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
-    const { img2, name, power, attack, hp, def, summary, baseExp, type, star, evolves_name, base_stat } = pokemon;
+    const { img2, name, power, attack, hp, def, summary, baseExp, type, star, evolves_name, evolves_pokedex, base_stat } = pokemon;
     const cardRef = useRef(null);
     const [detail, setDetail] = useState(false)
     const [rotate, setRotate] = useState(false)
+    const [animation, setAnimation] = useState(false)
 
-    console.log(pokemon, '==')
+    console.log(pokemon)
 
     function detailButton() {
         setDetail(!detail)
@@ -35,7 +38,7 @@ export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
     }, []);
 
     function cardClass() {
-        let result = 'card-detail'
+        let result = 'card-detail evolving'
         if (cardCtrl) result += ' card-ctrl'
         if (rotate) result += ' transition'
         if (detail) result += ' rotate'
@@ -61,9 +64,37 @@ export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
     function canEvolve(name, star) {
         if (!name) return "Evolve not available"
         else {
-            if (star === 2) return 'Ready to evolve'
-            else return 'Need more star to evolve'
+            if (star < 2) return 'Need more star to evolve'
+            else if (pokemon.level < star * 30) return 'level must reach its maximum'
+            else return 'Ready to evolve'
         }
+    }
+
+    const readyToEvolve = (level, star) => {
+        console.log(level, star)
+        if (star < 2 || level < star * 30) return false
+        else return true
+    }
+
+    async function evolve() {
+        setAnimation(true)
+        await axios({
+            method: 'PATCH',
+            headers: { access_token: localStorage.getItem('access_token') },
+            url: baseUrl + `/pokemon/evolve/${pokemon.id}`,
+            data: { evolves_pokedex }
+        })
+            .then(res => {
+                if (res.status !== 200) throw new Error("something went wrong");
+
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: `ERROR ${error.response.status}`,
+                    text: error.response.data.message,
+                });
+            });
     }
 
     return (
@@ -74,13 +105,9 @@ export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
                 <h2>{name}</h2>
                 <p className='summary'>{summary}</p>
                 <div className='type'>
-                    {cardCtrl ? type?.map((el, i) => {
+                    {type?.elements.map((el, i) => {
                         return <span key={i} style={{ backgroundColor: styleType(el, 'background'), borderColor: styleType(el, 'border') }}>{el}</span>
-                    }) :
-                        type?.elements.map((el, i) => {
-                            return <span key={i} style={{ backgroundColor: styleType(el, 'background'), borderColor: styleType(el, 'border') }}>{el}</span>
-                        })
-                    }
+                    })}
                 </div>
                 <div className="color-rank" style={{ backgroundColor: setColor(baseExp) }}>
                     <p onClick={detailButton}>More Detail &#8644;</p>
@@ -125,7 +152,8 @@ export default function CardDetail({ pokemon = undefined, cardCtrl = false }) {
                         </div>
                         <div className="evolve">
                             <i>{canEvolve(evolves_name, star)}</i>
-                            <button>Evolve</button>
+                            {console.log(readyToEvolve(pokemon.level, star))}
+                            {readyToEvolve(pokemon.level, star) ? <button className='logout' onClick={evolve}>Evolve</button> : <button className='deactive'>Evolve</button>}
                         </div>
                     </div>
                 </div>
