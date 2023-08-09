@@ -8,11 +8,17 @@ import gameOver from '../assets/sound/game-over.wav'
 import hit_sound from '../assets/sound/hit-sound.mp3'
 import lose_sound from '../assets/sound/lose-sound.mp3'
 import win_sound from '../assets/sound/win-sound.mp3'
+import evolve_sound from '../assets/sound/evolve.mp3'
 
 import ReactAudioPlayer from 'react-audio-player';
 
 export const clickSound = () => {
     const audio = new Audio(clickTone);
+    audio.play();
+};
+
+export const evolveSound = () => {
+    const audio = new Audio(evolve_sound);
     audio.play();
 };
 

@@ -5,13 +5,18 @@
   --stat: 100%;
 }
 
+.card-wrapper {
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+}
+
 .card-detail {
   width: 400px;
   height: 580px;
   position: relative;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
   transform-style: preserve-3d;
-  transform: perspective(1000px);
+  transform: perspective(2000px);
   border-radius: 10px;
 }
 
@@ -24,7 +29,7 @@
   flex-direction: column;
   align-items: center;
   transform-style: preserve-3d;
-  transform: perspective(1000px);
+  transform: perspective(2000px);
   position: absolute;
   border-radius: 10px;
 }
@@ -35,7 +40,7 @@
 }
 
 .back-card {
-  transform: rotateY(180deg) !important;
+  transform: rotateY(180deg);
   background-color: var(--border-card);
   overflow: hidden;
   justify-content: center;
@@ -46,10 +51,10 @@
   width: 90%;
   height: 80%;
   border-radius: 10px;
-  padding: 15px 10px;
+  padding: min(3vw, 15px) 10px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: min(2vw,15px);
   position: relative;
 }
 
@@ -62,7 +67,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: min(1vw,5px);
   margin-bottom: 10px;
 }
 
@@ -71,7 +76,7 @@
 }
 
 .back-content .power img {
-  width: 40px;
+  width: clamp(25px, 4vw, 40px);
   height: 40px;
   object-fit: contain;
 }
@@ -88,11 +93,13 @@
 
 .back-content .bottom .star {
   display: flex;
-  gap: 8px;
+  gap: min(1vw,8px);
+  flex-wrap: wrap;
+  width: 50%;
 }
 
 .back-content .bottom .star img {
-  width: 25px;
+  width: min(6vw, 25px);
   height: 25px;
   object-fit: contain;
 }
@@ -100,7 +107,7 @@
 .back-content .bottom .evolve {
   display: flex;
   flex-direction: column;
-  width: 160px;
+  width: min(40vw,160px);
   gap: 5px;
   align-items: center;
 }
@@ -128,7 +135,7 @@
 
 .back-content .bottom .evolve i {
   font-family: var(--alt-font);
-  font-size: 10px;
+  font-size: min(2.5vw,10px);
   color: gray;
 }
 
@@ -144,7 +151,11 @@
 }
 
 .rotate {
-  transform: rotateY(180deg) !important;
+  transform: rotateY(180deg);
+}
+
+.evolving.rotate {
+  transform: rotateY(180deg);
 }
 
 .transition {
@@ -209,6 +220,7 @@
   font-size: 15px;
   height: 90px;
   overflow: auto;
+  word-break: break-word;
 }
 
 .type {
@@ -220,6 +232,8 @@
   column-gap: 20px;
   transform: translateZ(20px);
   backface-visibility: hidden;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 
 .type span,
@@ -247,21 +261,17 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 25px;
+  margin-bottom: 5%;
 }
 
 .stat p:nth-child(2) {
   width: 23%;
-  font-size: 16px;
+  font-size: clamp(11px, 2vw, 16px);
   word-break: keep-all;
 }
 
-.stat p:nth-child(4) {
-  font-size: 13px;
-}
-
 .stat span {
-  width: 65%;
+  width: 60%;
   height: 100%;
   background-color: var(--gray);
   margin-right: 4px;
@@ -282,7 +292,7 @@
 }
 
 .stat-group+p {
-  font-size: 15px;
+  font-size: clamp(11px, 3vw, 15px);
 }
 
 .weakness {
@@ -290,6 +300,15 @@
   flex-wrap: wrap;
   gap: 2px 5px;
   align-items: center;
+  font-size: clamp(11px, 3vw, 15px);
+}
+
+.weakness span {
+  padding: clamp(0px, 1vw, 7px);
+  width: min(100%, 10vw);
+  max-width: 100px;
+  min-width: 80px;
+  font-size: clamp(8px,2vw,10px);
 }
 
 .star-off {
@@ -298,11 +317,12 @@
 }
 
 .evolving {
-  animation: evolving 4s ease-in;
+  animation: evolving 5s ease-in-out;
   animation-fill-mode: both;
 }
 
-.evolving::before {
+.evolving::before,
+.evolving::after {
   content: "";
   background-color: white;
   width: 100%;
@@ -312,6 +332,29 @@
   top: 0;
   left: 0;
   z-index: 10;
+  animation: evolve-shine 4s ease-in;
+  animation-fill-mode: both;
+  box-shadow: 0 0 5px #00b3ff,
+    0 0 15px #00b3ff, 0 0 40px #00b3ff;
+}
+
+.evolving::before {
+  transform: translateZ(21px);
+}
+
+@keyframes evolve-shine {
+  0% {
+    opacity: 0;
+  }
+
+  75% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 @keyframes evolving {
@@ -320,7 +363,7 @@
   }
 
   100% {
-    transform: rotateY(1080deg);
+    transform: rotateY(4320deg);
   }
 }
 
@@ -375,11 +418,7 @@
     font-size: 12px;
   }
 
-  .card-detail p {
-    /* font-size: 12px; */
-    /* margin-top: 12px; */
-    /* height: 10vh; */
-  }
+  .card-ctrl {}
 }
 
 ::-webkit-scrollbar {
