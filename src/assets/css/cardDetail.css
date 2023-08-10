@@ -3,6 +3,8 @@
   --alt-font: Verdana, Geneva, Tahoma, sans-serif;
   --gray: #D9D9D9;
   --stat: 100%;
+  --outer: #FFFFFF;
+  --inner: #FFFFFF;
 }
 
 .card-wrapper {
@@ -54,7 +56,7 @@
   padding: min(3vw, 15px) 10px;
   display: flex;
   flex-direction: column;
-  gap: min(2vw,15px);
+  gap: min(2vw, 15px);
   position: relative;
 }
 
@@ -67,7 +69,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: min(1vw,5px);
+  gap: min(1vw, 5px);
   margin-bottom: 10px;
 }
 
@@ -91,32 +93,75 @@
   justify-content: space-between;
 }
 
-.back-content .bottom .star {
+.mobile.bottom {
+  flex-direction: column;
+}
+
+.mobile.bottom .star {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.mobile.bottom i:first-child {
+  font-family: var(--alt-font);
+  font-size: min(2.5vw, 10px);
+  color: gray;
+  margin-bottom:7px;
+}
+
+.mobile.bottom .star+button {
+  background-color: orange;
+  width: 50%;
+  position: absolute;
+  bottom: -45px;
+  display: block;
+}
+
+.bottom .star+button {
+  display: none;
+}
+
+.mobile.bottom .star+button:hover {
+  box-shadow: none;
+}
+
+.bottom .star {
   display: flex;
-  gap: min(1vw,8px);
+  gap: min(1vw, 8px);
   flex-wrap: wrap;
   width: 50%;
 }
 
-.back-content .bottom .star img {
+.bottom .star img {
   width: min(6vw, 25px);
   height: 25px;
   object-fit: contain;
 }
 
-.back-content .bottom .evolve {
+.bottom .evolve {
   display: flex;
   flex-direction: column;
-  width: min(40vw,160px);
+  width: min(40vw, 160px);
   gap: 5px;
   align-items: center;
 }
 
-.back-content .bottom .evolve .deactive {
+.bottom .evolve .deactive {
   background-color: var(--gray);
   font-family: var(--alt-font);
   padding: 5px 15px;
   width: 100%;
+  border-radius: 10px;
+  font-size: 18px;
+  border: none;
+  color: rgb(150, 150, 150);
+  pointer-events: none;
+}
+
+.mobile.bottom .star+.deactive {
+  background-color: var(--gray);
+  font-family: var(--alt-font);
   border-radius: 10px;
   font-size: 18px;
   border: none;
@@ -135,7 +180,7 @@
 
 .back-content .bottom .evolve i {
   font-family: var(--alt-font);
-  font-size: min(2.5vw,10px);
+  font-size: min(2.5vw, 10px);
   color: gray;
 }
 
@@ -193,8 +238,54 @@
   border-radius: 12px;
   padding: 10px;
   box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.4);
-  transform: translateZ(20px);
   backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-style: preserve-3d;
+  transform: translateZ(20px);
+  position: relative;
+}
+
+.role {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  bottom: -15px;
+  right: -15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--inner);
+  border: 2px solid var(--outer);
+  padding: 5px;
+  cursor: pointer;
+}
+
+.role span {
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+.role span img {
+  height: 15px;
+  width: 15px;
+  object-fit: contain;
+}
+
+.pokemon-img img {
+  width: 130%;
+  transform: translateZ(20px);
+  height: 130%;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .card-detail h2,
@@ -307,8 +398,8 @@
   padding: clamp(0px, 1vw, 7px);
   width: min(100%, 10vw);
   max-width: 100px;
-  min-width: 80px;
-  font-size: clamp(8px,2vw,10px);
+  min-width: 75px;
+  font-size: clamp(8px, 2vw, 10px);
 }
 
 .star-off {
@@ -341,6 +432,7 @@
 .evolving::before {
   transform: translateZ(21px);
 }
+
 
 @keyframes evolve-shine {
   0% {
@@ -417,8 +509,6 @@
   .card-ctrl h3 {
     font-size: 12px;
   }
-
-  .card-ctrl {}
 }
 
 ::-webkit-scrollbar {

@@ -138,9 +138,74 @@ export function calculateMaximumStat(totalStat, typeStat) {
   const maxHP = 255
   const maxDef = 230
 
-  if (typeStat === 'attack') return (totalStat/maxAttack)*100 + '%'
-  else if (typeStat === 'hp') return (totalStat/maxHP)*100 + '%'
-  else if (typeStat === 'def') return (totalStat/maxDef)*100 + '%'
+  if (typeStat === 'attack') return (totalStat / maxAttack) * 100 + '%'
+  else if (typeStat === 'hp') return (totalStat / maxHP) * 100 + '%'
+  else if (typeStat === 'def') return (totalStat / maxDef) * 100 + '%'
 }
 
+export function setRoleAndPercentage(stat) {
+  const maxAttack = 190
+  const maxHP = 255
+  const maxDef = 230
 
+  const result = {
+    percentage: {},
+    role: ''
+  }
+
+  let highest = 0
+
+  for (const key in stat) {
+    const countPercentage = (type) => {
+      if (type === 'attack') return (stat[key] / maxAttack) * 100
+      if (type === 'def') return (stat[key] / maxHP) * 100
+      if (type === 'hp') return (stat[key] / maxDef) * 100
+    }
+
+    const percentage = countPercentage(key)
+
+    if (percentage > highest) {
+      highest = percentage
+      if (key === 'attack') result.role = 'Combat'
+      else if (key === 'hp') result.role = 'Support'
+      else if (key === 'def') result.role = 'Tanker'
+    }
+
+    result.percentage[key] = percentage
+  }
+
+  return result
+}
+
+export const skillAndItem = [
+  {
+    role: 'Tanker',
+    ability: [
+      { name: 'Taunt', description: 'Taunting enemy for one round' }
+    ],
+    item: [
+      { name: 'Dopping', ammount: 1, description: 'Convert some def to attack for 2 rounds' },
+      { name: 'Focus Sash', ammount: 1, description: 'Pokémon will never perish and will retain 1 HP for a single round' }
+    ]
+  },
+  {
+    role: 'Combat',
+    ability: [
+      { name: 'Charge', description: 'Deal 250% damage for the next turn' }
+    ],
+    item: [
+      { name: 'Smoke Bomb', ammount: 1, description: 'Increase the dodge chance for 1 round' },
+      { name: 'Eject Button', ammount: 1, description: 'Obtain an additional turn' }
+    ]
+  },
+  {
+    role: 'Support',
+    ability: [
+      { name: 'Heal', description: 'Heal a teammate' }
+    ],
+    item: [
+      { name: 'Bottle Potion', ammount: 1, description: 'Heal all teammates' },
+      { name: "Guardian's Elixir", ammount: 1, description: 'Provide all teammates with a barrier' }
+    ]
+  }
+]

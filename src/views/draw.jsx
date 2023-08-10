@@ -12,6 +12,7 @@ import { getUserInfo } from "../store/actions/fetchUser"
 import LoadingScreen from "../components/loading"
 import Swal from "sweetalert2"
 import giphy from "../assets/icon/giphy.gif"
+import { setRoleAndPercentage } from "../constant/helper"
 
 export default function DrawPage() {
     const [pokemon, setPokemon] = useState({})
@@ -24,13 +25,18 @@ export default function DrawPage() {
         return state.UserReducer.balls
     })
 
+    function savePokemon(dataPokemon) {
+        const roleAndPercentage = setRoleAndPercentage(dataPokemon.base_stat)
+        setPokemon({ ...dataPokemon, ...roleAndPercentage })
+    }
+
     useEffect(() => {
         axios({
             url: baseUrl + '/pokemon/draw',
             method: "GET",
             headers: { access_token: localStorage.getItem('access_token') }
         }).then((res) => {
-            setPokemon(res.data.pokemon)
+            savePokemon(res.data.pokemon)
             setIsLoading(false)
         }).catch(error => {
             console.log(error);
@@ -52,9 +58,7 @@ export default function DrawPage() {
                 headers: { access_token: localStorage.getItem('access_token') }
             });
 
-            const pokemonData = response.data.pokemon;
-
-            setPokemon(pokemonData);
+            savePokemon(response.data.pokemon)
         } catch (error) {
             console.log(error);
         } finally {
@@ -100,8 +104,7 @@ export default function DrawPage() {
                         headers: { access_token: localStorage.getItem('access_token') }
                     });
 
-                    const pokemonData = response.data.pokemon;
-                    setPokemon(pokemonData);
+                    savePokemon(response.data.pokemon)
                 } else {
                     dispatch(getUserInfo());
                     Swal.fire({

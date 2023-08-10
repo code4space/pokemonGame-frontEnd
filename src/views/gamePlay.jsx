@@ -7,7 +7,7 @@ import { clickSound1, deathSound, hitSound } from '../components/playSound'
 import axios from 'axios'
 import { baseUrl } from '../constant/url'
 import LoadingScreen from '../components/loading'
-import { damageDealt } from '../constant/helper'
+import { damageDealt, skillAndItem } from '../constant/helper'
 import bookIcon from '../assets/icon/book.png'
 import InstructionPage from '../components/instruction'
 import targetIcon from '../assets/icon/target.png'
@@ -20,11 +20,15 @@ export default function GamePlayPage() {
     const [enemies, setEnemies] = useState(false)
     const [attackMenu, setAttackMenu] = useState(false)
     const [sightMenu, setSightMenu] = useState(false)
+    const [abilityMenu, setAbilityMenu] = useState(false)
+    const [itemMenu, setItemMenu] = useState(false)
+    const [menu, setMenu] = useState(true)
     const [sightTarget, setSightTarget] = useState(null)
     const [remainingHP, setRemainingHP] = useState([])
     const [barrier, setBarrier] = useState([])
     const [myDeck, setMyDeck] = useState([])
     const [instruction, setInstruction] = useState(false)
+    const [abilityAndItem, setAbilityAndItem] = useState()
 
     // set useEffect (if clear the function will run normally)
     const [clear, setClear] = useState(false)
@@ -37,7 +41,6 @@ export default function GamePlayPage() {
 
     const navigate = useNavigate()
 
-
     const difficulty = useSelector((state) => {
         return state.UserReducer.isHard
     })
@@ -45,10 +48,7 @@ export default function GamePlayPage() {
     const deck = useSelector((state) => {
         return state.UserReducer.deck
     })
-    const dispatch = useDispatch();
 
-
-    console.log(deck)
     const lose = async () => {
         let state = { isLose: true, difficulty };
         if (difficulty) {
@@ -82,14 +82,19 @@ export default function GamePlayPage() {
         )
     }
 
-    function handleButtonAttack() {
+    function setActiveMenu(option) {
         clickSound1()
-        setAttackMenu(true)
+        option(true)
+        setMenu(false)
     }
 
-    function handleButtonSight() {
-        clickSound1()
-        setSightMenu(true)
+    function setMyAbility(pokemon) {
+        let temp = {}
+        pokemon.forEach((el) => {
+            const { name, role } = el
+            temp[name] = skillAndItem.find(el1 => el1.role === role)
+        })
+        setAbilityAndItem(temp)
     }
 
     function attackingTarget(target) {
@@ -145,6 +150,7 @@ export default function GamePlayPage() {
                 setTurn(turn + 1)
                 return setIsMyTurn(false)
             }
+            setMenu(true)
 
             return setTurn(turn + 1)
         }, 800);
@@ -186,6 +192,7 @@ export default function GamePlayPage() {
                 if (!enemies[index - tempDeck.length]) {
                     setTurn(0)
                     setRemainingHP(temp)
+                    setMenu(true)
                     return setIsMyTurn(true)
                 }
                 return setRemainingHP(temp)
@@ -196,6 +203,7 @@ export default function GamePlayPage() {
             if (turn + 1 === myDeck.length + enemies.length) {
                 setTurn(0)
                 setBarrier([0, 0, 0])
+                setMenu(true)
                 return setIsMyTurn(true)
             }
 
@@ -221,10 +229,10 @@ export default function GamePlayPage() {
         return setTurn(turn + 1)
     }
 
-    function back() {
+    function back(choosenMenu) {
         clickSound1()
-        setSightMenu(false)
-        setAttackMenu(false)
+        choosenMenu(false)
+        setMenu(true)
     }
 
     function fetchRemainingHp(enemies) {
@@ -252,6 +260,7 @@ export default function GamePlayPage() {
         }).then((res) => {
             const temp = [...deck]
             setMyDeck(temp)
+            setMyAbility(temp)
             setEnemies(res.data.pokemon)
             setIsLoading(false)
             fetchRemainingHp(res.data.pokemon)
@@ -261,6 +270,7 @@ export default function GamePlayPage() {
         });
     }, [])
 
+    console.log(abilityAndItem)
 
     useEffect(() => {
         if (turn >= myDeck.length && clear) {
@@ -352,16 +362,28 @@ export default function GamePlayPage() {
                                                         {attackMenu && <>{enemies.map((el, i) => {
                                                             return <span key={el.id} onClick={() => attackingTarget(i)}>* Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
                                                         })}
-                                                            <span onClick={back} style={{ marginTop: '20px' }}>* Back</span></>
+                                                            <span onClick={() => back(setAttackMenu)} style={{ marginTop: '20px' }}>* Back</span></>
                                                         }
                                                         {sightMenu && <>{enemies.map((el, i) => {
                                                             return <span key={el.id} onClick={() => seeTarget(i)}>* Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
                                                         })}
-                                                            <span onClick={back} style={{ marginTop: '20px' }}>* Back</span></>
+                                                            <span onClick={() => back(setSightMenu)} style={{ marginTop: '20px' }}>* Back</span></>
                                                         }
-                                                        {(!attackMenu && !sightMenu) && <><span onClick={handleButtonAttack}>* Attack</span>
+                                                        {abilityMenu && <>{abilityAndItem[myDeck[turn].name].ability.map((el, i) => {
+                                                            return <span key={el.name} onClick={() => seeTarget(i)}>* {el.name} <i>({el.description})</i></span>
+                                                        })}
+                                                            <span onClick={() => back(setAbilityMenu)} style={{ marginTop: '20px' }}>* Back</span></>
+                                                        }
+                                                        {itemMenu && <>{abilityAndItem[myDeck[turn].name].item.map((el, i) => {
+                                                            return <span key={el.name} onClick={() => seeTarget(i)}>{el.ammount}x {el.name} <i>({el.description})</i></span>
+                                                        })}
+                                                            <span onClick={() => back(setItemMenu)} style={{ marginTop: '20px' }}>* Back</span></>
+                                                        }
+                                                        {menu && <><span onClick={() => setActiveMenu(setAttackMenu)}>* Attack</span>
                                                             <span onClick={() => { handleButtonDef(turn) }}>* Def</span>
-                                                            <span onClick={handleButtonSight}>* Sight</span>
+                                                            <span onClick={() => setActiveMenu(setAbilityMenu)}>* Skill</span>
+                                                            <span onClick={() => setActiveMenu(setItemMenu)}>* Item</span>
+                                                            <span onClick={() => setActiveMenu(setSightMenu)}>* Sight</span>
                                                         </>}
                                                     </div>
                                                 </>
