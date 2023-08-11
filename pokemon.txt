@@ -1,21 +1,23 @@
 
 // Tanker
 passive: reduces damage taken
-ability: taunting enemy
+ability: taunting enemy for one round -- Taunt
 item: 
 -- dopping = convert some def to attack for 2 rounds
 -- Focus Sash = Pokémon will never perish and will retain 1 HP for a single round
 
 // Combat
 passive: increase effective damage
-ability: Deal 250% damage for the next turn
+ability: Deal 250% damage for the next turn -- Charge
 item: 
 -- smoke bomb = increase the dodge chance for 1 round
 -- Eject Button = Obtain an additional turn
 
 // Support
 passive: self-regenerate small amount hp
-ability: heal a teammate
+ability: heal a teammate - Heal
 item : 
 -- bottle potion : heal all teammates
 -- Guardian's Elixir : Provide all teammates with a barrier
+
+name : {role: 'Tanker', ability: ['Taunt], item: [{name, ammount}, {}]}
