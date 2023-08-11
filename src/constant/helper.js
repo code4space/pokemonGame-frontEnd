@@ -209,3 +209,22 @@ export const skillAndItem = [
     ]
   }
 ]
+
+
+export function getBarrier (def, hp, tanker = false) {
+    const percentage = 15
+    if (tanker) percentage + 10
+    return Math.ceil((def * percentage / 100) + (hp * percentage / 100))
+}
+
+//? Item
+
+export function GuardiansElixir (myDeck) {
+  let barrier = [] 
+  myDeck.forEach(el => barrier.push(getBarrier(el.def, el.hp, el.role)))
+  return barrier
+}
+
+export function heal (hp) {
+  return Math.floor(hp * (12/100))
+}

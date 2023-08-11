@@ -7,10 +7,12 @@ import { clickSound1, deathSound, hitSound } from '../components/playSound'
 import axios from 'axios'
 import { baseUrl } from '../constant/url'
 import LoadingScreen from '../components/loading'
-import { damageDealt, skillAndItem } from '../constant/helper'
+import { GuardiansElixir, damageDealt, getBarrier, heal, skillAndItem } from '../constant/helper'
 import bookIcon from '../assets/icon/book.png'
 import InstructionPage from '../components/instruction'
 import targetIcon from '../assets/icon/target.png'
+import HealingAnimation from '../components/healingAnimation'
+import Select from '../components/selectAnimation'
 
 export default function GamePlayPage() {
 
@@ -19,25 +21,29 @@ export default function GamePlayPage() {
     const [isMyTurn, setIsMyTurn] = useState(true)
     const [enemies, setEnemies] = useState(false)
     const [attackMenu, setAttackMenu] = useState(false)
+    const [healMenu, setHealMenu] = useState(false)
     const [sightMenu, setSightMenu] = useState(false)
     const [abilityMenu, setAbilityMenu] = useState(false)
     const [itemMenu, setItemMenu] = useState(false)
     const [menu, setMenu] = useState(true)
     const [sightTarget, setSightTarget] = useState(null)
     const [remainingHP, setRemainingHP] = useState([])
-    const [barrier, setBarrier] = useState([])
+    const [barrier, setBarrier] = useState([10])
     const [myDeck, setMyDeck] = useState([])
     const [instruction, setInstruction] = useState(false)
     const [abilityAndItem, setAbilityAndItem] = useState()
+    const [healAnimation, setHealAnimation] = useState(false)
 
     // set useEffect (if clear the function will run normally)
     const [clear, setClear] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
 
     // effect
+    const [targetHeal, setTargetHeal] = useState(null)
     const [targetEffect, setTargetEffetct] = useState(false)
     const [hitEffect, setHitEffect] = useState(false)
     const [damage, setDamage] = useState({ total: 0, effectiveness: 'Normal' })
+
 
     const navigate = useNavigate()
 
@@ -171,8 +177,8 @@ export default function GamePlayPage() {
         else {
             temp[0] += tempBarrier[0]
             tempBarrier[0] = 0
-            setBarrier(tempBarrier)
         }
+
 
         let tempDeck = [...myDeck]
         setDamage({ ...damage, total: dd.damage, effectiveness: dd.status })
@@ -188,15 +194,19 @@ export default function GamePlayPage() {
                 tempDeck.splice(0, 1)
                 temp.splice(0, 1)
                 setMyDeck(tempDeck)
+                tempBarrier.splice(0, 1)
+                setBarrier(tempBarrier)
 
                 if (!enemies[index - tempDeck.length]) {
                     setTurn(0)
                     setRemainingHP(temp)
                     setMenu(true)
+                    setBarrier([0, 0, 0])
                     return setIsMyTurn(true)
                 }
                 return setRemainingHP(temp)
             } else {
+                setBarrier(tempBarrier)
                 setRemainingHP(temp)
             }
 
@@ -209,16 +219,15 @@ export default function GamePlayPage() {
 
             return setTurn(turn + 1)
         }, 2000)
-
         return () => clearTimeout(timer);
     }
 
     function handleButtonDef(index) {
         clickSound1()
 
-        const gainBarrier = Math.ceil((myDeck[index].def * 15 / 100) + (myDeck[index].hp * 15 / 100))
+        const gainBarrier = getBarrier(myDeck[index].def, myDeck[index].hp, myDeck[index].role === 'tanker' ? true : false)
         let tempBarrier = [...barrier]
-        tempBarrier[index] = gainBarrier
+        tempBarrier[index] += gainBarrier
         setBarrier(tempBarrier)
 
         if (turn + 1 === myDeck.length) {
@@ -270,13 +279,87 @@ export default function GamePlayPage() {
         });
     }, [])
 
-    console.log(abilityAndItem)
-
+    console.log(myDeck)
     useEffect(() => {
+        if (isMyTurn && myDeck[turn]?.role === 'Support') {
+            let tempHp = [...remainingHP]
+            const healAmmount = heal(myDeck[turn].hp)
+
+            tempHp[turn] += healAmmount
+            if (tempHp[turn] > myDeck[turn].hp) tempHp[turn] = myDeck[turn].hp
+            setRemainingHP(tempHp)
+
+            setHealAnimation(true)
+            setTargetHeal(turn)
+            setTimeout(() => {
+                setTargetHeal(null)
+                setHealAnimation(false)
+            }, 1500)
+        }
         if (turn >= myDeck.length && clear) {
             enemyTurn(turn);
         }
     }, [turn, enemies, myDeck]);
+
+    function useItem(itemName) {
+        if (itemName === "Guardian's Elixir") {
+            const barrierAmmount = GuardiansElixir(myDeck)
+            let temp = [...barrier]
+            barrierAmmount.forEach((el, i) => {
+                temp[i] += el
+            })
+            setBarrier(temp)
+        }
+        else if (itemName === "Bottle Potion") {
+            let temp = [...remainingHP]
+
+            for (let i = 0; i < myDeck.length; i++) {
+                const healAmmount = myDeck[i].hp * (15 / 100)
+                temp[i] += healAmmount
+                if (temp[i] > myDeck[i].hp) temp[i] = myDeck[i].hp
+            }
+            setRemainingHP(temp)
+
+            setHealAnimation(true)
+            setTimeout(() => {
+                setHealAnimation(false)
+            }, 3000)
+        }
+        back(setItemMenu)
+    }
+
+    function useAbility(abilityName, index) {
+        if (abilityName === 'Heal') {
+            setHealMenu(true)
+            setAbilityMenu(false)
+        }
+    }
+
+    function healingTarget(index) {
+        let tempHp = [...remainingHP]
+        const healAmmount = heal(myDeck[index].hp)
+
+        tempHp[index] += healAmmount
+        if (tempHp[index] > myDeck[index].hp) tempHp[index] = myDeck[index].hp
+        setRemainingHP(tempHp)
+        setHitEffect(true)
+
+        setHealAnimation(true)
+        setTargetHeal(index)
+        setTimeout(() => {
+            setHitEffect(false)
+            setTargetHeal(null)
+            setHealAnimation(false)
+            back(setHealMenu)
+
+            if (turn + 1 === myDeck.length) {
+                setTurn(turn + 1)
+                return setIsMyTurn(false)
+            }
+
+            return setTurn(turn + 1)
+        }, 1500)
+    }
 
     function handleButtonInstruction() {
         setInstruction(!instruction)
@@ -311,7 +394,7 @@ export default function GamePlayPage() {
                                 return (
                                     <div className='pokemon-img-ctrl' key={i}>
                                         <img src={el.frontView} alt="" style={((hitEffect && isMyTurn) && targetEffect === i) ? { animation: 'shake 0.4s linear 0s, hitEffect 1s linear 0s' } : null} />
-                                        {attackMenu && <img src={targetIcon} alt="target_img" onClick={() => { attackingTarget(i) }} />}
+                                        {attackMenu && <img src={targetIcon} alt="target_img" className='target' onClick={() => { attackingTarget(i) }} />}
                                         <span className='hp-bar'><p>Hp.</p> <span className='hp'>
                                             <span style={{ width: `${(remainingHP[i + myDeck.length] / el.hp) * 100}%` }}></span>
                                         </span></span>
@@ -329,6 +412,10 @@ export default function GamePlayPage() {
                                 return (
                                     <div className='pokemon-img-ctrl' key={i}>
                                         <img src={el.backView} alt="" style={((hitEffect && !isMyTurn) && i === 0) ? { animation: 'shake1 2s linear 0s infinite, hitEffect1 2s linear 0s infinite' } : null} />
+                                        {(healAnimation && targetHeal === null) && <HealingAnimation />}
+                                        {(healAnimation && targetHeal === i) && <HealingAnimation />}
+                                        {healMenu && <Select />}
+
                                         <span className='hp-bar'><p>Hp.</p> <span className='hp'>
                                             <span style={{ width: `${(remainingHP[i] / el.hp) * 100}%` }}></span>
                                             <span style={{ width: `${(barrier[i] / el.hp) * 100}%` }}></span>
@@ -358,11 +445,16 @@ export default function GamePlayPage() {
                                                 :
                                                 <>
                                                     <p>Lv.{myDeck[turn]?.level} {myDeck[turn]?.name.toUpperCase()} Turn</p>
-                                                    <div className='turn-opt'>
+                                                    <div className={menu ? 'turn-opt menu' : 'turn-opt'}>
                                                         {attackMenu && <>{enemies.map((el, i) => {
                                                             return <span key={el.id} onClick={() => attackingTarget(i)}>* Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
                                                         })}
                                                             <span onClick={() => back(setAttackMenu)} style={{ marginTop: '20px' }}>* Back</span></>
+                                                        }
+                                                        {healMenu && <>{myDeck.map((el, i) => {
+                                                            return <span key={el.id} onClick={() => healingTarget(i)}>* Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
+                                                        })}
+                                                            <span onClick={() => back(setHealMenu)} style={{ marginTop: '20px' }}>* Back</span></>
                                                         }
                                                         {sightMenu && <>{enemies.map((el, i) => {
                                                             return <span key={el.id} onClick={() => seeTarget(i)}>* Lv. {el?.level} {el.name} [{el.type.elements.join(', ')}]</span>
@@ -370,12 +462,12 @@ export default function GamePlayPage() {
                                                             <span onClick={() => back(setSightMenu)} style={{ marginTop: '20px' }}>* Back</span></>
                                                         }
                                                         {abilityMenu && <>{abilityAndItem[myDeck[turn].name].ability.map((el, i) => {
-                                                            return <span key={el.name} onClick={() => seeTarget(i)}>* {el.name} <i>({el.description})</i></span>
+                                                            return <span key={el.name} onClick={() => useAbility(el.name, i)}>* {el.name} <i>({el.description})</i></span>
                                                         })}
                                                             <span onClick={() => back(setAbilityMenu)} style={{ marginTop: '20px' }}>* Back</span></>
                                                         }
                                                         {itemMenu && <>{abilityAndItem[myDeck[turn].name].item.map((el, i) => {
-                                                            return <span key={el.name} onClick={() => seeTarget(i)}>{el.ammount}x {el.name} <i>({el.description})</i></span>
+                                                            return <span key={el.name} onClick={() => useItem(el.name)}>{el.ammount}x {el.name} <i>({el.description})</i></span>
                                                         })}
                                                             <span onClick={() => back(setItemMenu)} style={{ marginTop: '20px' }}>* Back</span></>
                                                         }
