@@ -9,6 +9,9 @@ import hit_sound from '../assets/sound/hit-sound.mp3'
 import lose_sound from '../assets/sound/lose-sound.mp3'
 import win_sound from '../assets/sound/win-sound.mp3'
 import evolve_sound from '../assets/sound/evolve.mp3'
+import heal_sound from '../assets/sound/healing.mp3'
+import roar_sound from '../assets/sound/roar.mp3'
+import grow_sound from '../assets/sound/grow.mp3'
 
 import ReactAudioPlayer from 'react-audio-player';
 
@@ -41,6 +44,24 @@ export const deathSound = () => {
 
 export const hitSound = () => {
     const audio = new Audio(hit_sound);
+    audio.volume = 0.4;
+    audio.play();
+};
+
+export const healingSound = () => {
+    const audio = new Audio(heal_sound);
+    audio.volume = 0.4;
+    audio.play();
+};
+
+export const roarSound = () => {
+    const audio = new Audio(roar_sound);
+    audio.volume = 0.4;
+    audio.play();
+};
+
+export const growSound = () => {
+    const audio = new Audio(grow_sound);
     audio.volume = 0.4;
     audio.play();
 };

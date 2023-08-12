@@ -3,7 +3,7 @@ import '../assets/css/gamePlay.css'
 import shadow from '../assets/icon/shadow.png'
 import { useSelector, useDispatch } from 'react-redux'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { clickSound1, deathSound, hitSound } from '../components/playSound'
+import { clickSound1, deathSound, growSound, healingSound, hitSound, roarSound } from '../components/playSound'
 import axios from 'axios'
 import { baseUrl } from '../constant/url'
 import LoadingScreen from '../components/loading'
@@ -13,6 +13,8 @@ import InstructionPage from '../components/instruction'
 import targetIcon from '../assets/icon/target.png'
 import HealingAnimation from '../components/healingAnimation'
 import Select from '../components/selectAnimation'
+import RoaringAnimation from '../components/roaringAnimation'
+import BuffAttackAnimation from '../components/buffAttackAnimation'
 
 export default function GamePlayPage() {
 
@@ -21,28 +23,36 @@ export default function GamePlayPage() {
     const [isMyTurn, setIsMyTurn] = useState(true)
     const [enemies, setEnemies] = useState(false)
     const [attackMenu, setAttackMenu] = useState(false)
-    const [healMenu, setHealMenu] = useState(false)
     const [sightMenu, setSightMenu] = useState(false)
     const [abilityMenu, setAbilityMenu] = useState(false)
     const [itemMenu, setItemMenu] = useState(false)
     const [menu, setMenu] = useState(true)
     const [sightTarget, setSightTarget] = useState(null)
     const [remainingHP, setRemainingHP] = useState([])
-    const [barrier, setBarrier] = useState([10])
     const [myDeck, setMyDeck] = useState([])
     const [instruction, setInstruction] = useState(false)
+    const [healMenu, setHealMenu] = useState(false)
+    const [barrier, setBarrier] = useState([10])
+
+    // skill and item
     const [abilityAndItem, setAbilityAndItem] = useState()
     const [healAnimation, setHealAnimation] = useState(false)
+    const [targetHeal, setTargetHeal] = useState(null)
+    const [dopping, setDopping] = useState({})
+    const [focusSash, setFocusSash] = useState({})
+    const [smokeBomb, setSmokeBomb] = useState({})
+    const [ejectButton, setEjectButton] = useState({})
+    const [taunt, setTaunt] = useState({ round: null, target: 0 })
+    const [charge, setCharge] = useState({})
 
     // set useEffect (if clear the function will run normally)
     const [clear, setClear] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
 
     // effect
-    const [targetHeal, setTargetHeal] = useState(null)
     const [targetEffect, setTargetEffetct] = useState(false)
     const [hitEffect, setHitEffect] = useState(false)
-    const [damage, setDamage] = useState({ total: 0, effectiveness: 'Normal' })
+    const [damage, setDamage] = useState({})
 
 
     const navigate = useNavigate()
@@ -103,6 +113,11 @@ export default function GamePlayPage() {
         setAbilityAndItem(temp)
     }
 
+    function ejectUsed() {
+        setMenu(true)
+        setEjectButton({})
+    }
+
     function attackingTarget(target) {
         setAttackMenu(false)
         hitSound()
@@ -110,7 +125,18 @@ export default function GamePlayPage() {
         setHitEffect(true);
         const dd = damageDealt(myDeck[turn]?.attack, enemies[target].def, myDeck[turn].power, enemies[target].type, myDeck[turn].type)
         setDamage({ ...damage, total: dd.damage, effectiveness: dd.status })
-
+        if (myDeck[turn].role === 'Combat') {
+            if (dd.status === 'Effective') dd.damage += dd.damage * (50 / 100)
+        }
+        if (charge[myDeck[turn].name]) {
+            setCharge(prevState => {
+                delete prevState[myDeck[turn].name]
+                return {
+                    ...prevState
+                }
+            })
+            dd.damage = Math.ceil(dd.damage * 2.5)
+        }
         const timer = setTimeout(async () => {
             setHitEffect(false);
             const temp = [...remainingHP]
@@ -152,6 +178,11 @@ export default function GamePlayPage() {
                 setRemainingHP(temp)
             }
 
+            if (ejectButton[myDeck[turn].name]) {
+                ejectUsed()
+                return undefined
+            }
+
             if (turn + 1 === myDeck.length) {
                 setTurn(turn + 1)
                 return setIsMyTurn(false)
@@ -164,19 +195,90 @@ export default function GamePlayPage() {
         return () => clearTimeout(timer);
     }
 
+    function roundIncrease() {
+        for (const key in dopping) {
+            setDopping((prevState) => {
+                if (prevState[key].round < 2) {
+                    return {
+                        ...prevState,
+                        [key]: {
+                            ...prevState[key],
+                            round: prevState[key].round++,
+                        },
+                    }
+                } else {
+                    const updatedDeck = myDeck.map((card) => {
+                        if (card.name === key) {
+                            return {
+                                ...card,
+                                def: card.def + prevState[key].covertAmmount,
+                                attack: card.attack - prevState[key].covertAmmount,
+                            };
+                        }
+                        return card;
+                    });
+                    setMyDeck(updatedDeck);
+                    delete prevState[key]
+                    return {
+                        ...prevState
+                    }
+                }
+            });
+        }
+        for (const key in focusSash) {
+            setFocusSash((prevState) => {
+                if (prevState[key].round < 1) {
+                    return {
+                        ...prevState,
+                        [key]: {
+                            ...prevState[key],
+                            round: prevState[key].round++,
+                        },
+                    }
+                } else {
+                    delete prevState[key]
+                    return {
+                        ...prevState
+                    }
+                }
+            });
+        }
+        for (const key in charge) {
+            setCharge(prevState => ({ ...prevState, [key]: true }))
+        }
+        setTaunt({ round: null, target: 0 })
+        setSmokeBomb({})
+
+    }
+
     function enemyTurn(index) {
-        if (!myDeck[0]) return lose()
+        let target = taunt.round !== null ? taunt.target : 0
+        let zombie = false
+
+        if (!myDeck.length) return lose()
         const temp = [...remainingHP]
-        const dd = damageDealt(enemies[index - myDeck.length]?.attack, myDeck[0]?.def, enemies[index - myDeck.length]?.power, myDeck[0]?.type, enemies[index - myDeck.length]?.type)
+        let dd = damageDealt(enemies[index - myDeck.length]?.attack, myDeck[0]?.def, enemies[index - myDeck.length]?.power, myDeck[0]?.type, enemies[index - myDeck.length]?.type)
+
+        if (focusSash[myDeck[target].name]) zombie = true
+        if (smokeBomb[myDeck[target].name]) {
+            const random = Math.random() * 10
+            if (random > 7) dd = { damage: 0, status: 'Miss' }
+        }
+        if (myDeck[target].role === 'Tanker') dd.damage = Math.ceil(dd.damage * (80 / 100))
+        if (myDeck[target].role === 'Combat') {
+            if (dd.status === 'Effective') Math.ceil(dd.damage += dd.damage * (50 / 100))
+        }
+
 
         // barrier
         const tempBarrier = [...barrier]
-        tempBarrier[0] -= dd.damage
+        tempBarrier[target] -= dd.damage
 
-        if (tempBarrier[0] > 0) setBarrier(tempBarrier)
+        if (tempBarrier[target] > 0) setBarrier(tempBarrier)
         else {
-            temp[0] += tempBarrier[0]
-            tempBarrier[0] = 0
+            temp[target] += tempBarrier[target]
+            if (zombie && temp[target] < 1) temp[target] = 1
+            tempBarrier[target] = 0
         }
 
 
@@ -189,7 +291,7 @@ export default function GamePlayPage() {
 
         const timer = setTimeout(() => {
             setHitEffect(false);
-            if (temp[0] <= 0) {
+            if (temp[target] <= 0) {
                 deathSound()
                 tempDeck.splice(0, 1)
                 temp.splice(0, 1)
@@ -202,6 +304,7 @@ export default function GamePlayPage() {
                     setRemainingHP(temp)
                     setMenu(true)
                     setBarrier([0, 0, 0])
+                    roundIncrease()
                     return setIsMyTurn(true)
                 }
                 return setRemainingHP(temp)
@@ -214,6 +317,7 @@ export default function GamePlayPage() {
                 setTurn(0)
                 setBarrier([0, 0, 0])
                 setMenu(true)
+                roundIncrease()
                 return setIsMyTurn(true)
             }
 
@@ -229,6 +333,11 @@ export default function GamePlayPage() {
         let tempBarrier = [...barrier]
         tempBarrier[index] += gainBarrier
         setBarrier(tempBarrier)
+
+        if (ejectButton[myDeck[turn].name]) {
+            ejectUsed()
+            return undefined
+        }
 
         if (turn + 1 === myDeck.length) {
             setTurn(turn + 1)
@@ -279,9 +388,9 @@ export default function GamePlayPage() {
         });
     }, [])
 
-    console.log(myDeck)
     useEffect(() => {
         if (isMyTurn && myDeck[turn]?.role === 'Support') {
+            healingSound()
             let tempHp = [...remainingHP]
             const healAmmount = heal(myDeck[turn].hp)
 
@@ -309,8 +418,7 @@ export default function GamePlayPage() {
                 temp[i] += el
             })
             setBarrier(temp)
-        }
-        else if (itemName === "Bottle Potion") {
+        } else if (itemName === "Bottle Potion") {
             let temp = [...remainingHP]
 
             for (let i = 0; i < myDeck.length; i++) {
@@ -324,18 +432,98 @@ export default function GamePlayPage() {
             setTimeout(() => {
                 setHealAnimation(false)
             }, 3000)
+        } else if (itemName === 'Dopping') {
+            const defToAttack = Math.ceil(myDeck[turn].def * (40 / 100))
+            const updatedDeck = myDeck.map((card, index) => {
+                if (index === turn) {
+                    return {
+                        ...card,
+                        def: card.def - defToAttack,
+                        attack: card.attack + defToAttack,
+                    };
+                }
+                return card;
+            });
+            const newState = { [myDeck[turn].name]: { round: 0, covertAmmount: defToAttack } }
+            setMyDeck(updatedDeck);
+            setDopping((prevState) => {
+                return { ...prevState, ...newState };
+            });
+        } else if (itemName === 'Focus Sash') {
+            const newState = { [myDeck[turn].name]: { round: 0 } }
+            setFocusSash((prevState) => {
+                return { ...prevState, ...newState };
+            });
+        } else if (itemName === 'Smoke Bomb') {
+            setSmokeBomb({ [myDeck[turn].name]: true })
+        } else if (itemName === 'Eject Button') {
+            setEjectButton({ [myDeck[turn].name]: true })
         }
+
+
+        setAbilityAndItem(prevState => {
+            let pokemonDetail = { ...prevState[myDeck[turn].name] }
+            let item = [...pokemonDetail.item]
+
+            item.splice(item.findIndex(el => el.name === itemName), 1)
+            pokemonDetail = { ...pokemonDetail, item }
+            return {
+                ...prevState,
+                [myDeck[turn].name]: pokemonDetail
+            }
+        })
+
         back(setItemMenu)
     }
 
     function useAbility(abilityName, index) {
+        clickSound1()
         if (abilityName === 'Heal') {
             setHealMenu(true)
             setAbilityMenu(false)
+        } else if (abilityName === 'Taunt') {
+            roarSound()
+            setTaunt({ round: 0, target: turn })
+            setHitEffect(true)
+            back(setAbilityMenu)
+            setTimeout(() => {
+                setHitEffect(false)
+                if (turn + 1 === myDeck.length) {
+                    setTurn(turn + 1)
+                    return setIsMyTurn(false)
+                }
+
+                return setTurn(turn + 1)
+
+            }, 1500)
+        } else if (abilityName === 'Charge') {
+            growSound()
+            setCharge(prevState => ({ ...prevState, [myDeck[turn].name]: false }))
+            back(setAbilityMenu)
+            setHitEffect(true)
+            setDamage({})
+            setTargetEffetct(null)
+            setTimeout(() => {
+                setHitEffect(false)
+                if (ejectButton[myDeck[turn].name]) {
+                    setCharge(prevState => ({ ...prevState, [myDeck[turn].name]: true }))
+                    ejectUsed()
+                    return undefined
+                }
+                if (turn + 1 === myDeck.length) {
+                    setTurn(turn + 1)
+                    return setIsMyTurn(false)
+                }
+
+                return setTurn(turn + 1)
+            }, 1000)
         }
+
     }
 
     function healingTarget(index) {
+        clickSound1()
+        healingSound()
         let tempHp = [...remainingHP]
         const healAmmount = heal(myDeck[index].hp)
 
@@ -398,7 +586,7 @@ export default function GamePlayPage() {
                                         <span className='hp-bar'><p>Hp.</p> <span className='hp'>
                                             <span style={{ width: `${(remainingHP[i + myDeck.length] / el.hp) * 100}%` }}></span>
                                         </span></span>
-                                        <div>{el.name}</div>
+                                        <div className='name'>{el.name}</div>
                                         {((hitEffect && isMyTurn) && targetEffect === i) && <h5><b style={damage.effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : damage.effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : damage.effectiveness === 'Ineffective' ? { color: 'rgb(216, 214, 77)' } : { color: 'white' }}>{damage.effectiveness}</b> {damage.total}</h5>}
                                     </div>
                                 )
@@ -411,17 +599,20 @@ export default function GamePlayPage() {
                             {myDeck.map((el, i) => {
                                 return (
                                     <div className='pokemon-img-ctrl' key={i}>
-                                        <img src={el.backView} alt="" style={((hitEffect && !isMyTurn) && i === 0) ? { animation: 'shake1 2s linear 0s infinite, hitEffect1 2s linear 0s infinite' } : null} />
+                                        <img src={el.backView} alt="" style={((hitEffect && !isMyTurn) && i === taunt.target) ? { animation: 'shake1 2s linear 0s infinite, hitEffect1 2s linear 0s infinite' } : null} />
+                                        {charge[el.name] && <BuffAttackAnimation />}
                                         {(healAnimation && targetHeal === null) && <HealingAnimation />}
                                         {(healAnimation && targetHeal === i) && <HealingAnimation />}
                                         {healMenu && <Select />}
+                                        {console.log(charge)}
+                                        {(taunt.target === i && taunt.round !== null) ? <RoaringAnimation /> : null}
 
                                         <span className='hp-bar'><p>Hp.</p> <span className='hp'>
                                             <span style={{ width: `${(remainingHP[i] / el.hp) * 100}%` }}></span>
                                             <span style={{ width: `${(barrier[i] / el.hp) * 100}%` }}></span>
                                         </span></span>
-                                        <div>{el.name}</div>
-                                        {((hitEffect && !isMyTurn) && 0 === i) && <h5><b style={damage.effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : damage.effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : damage.effectiveness === 'Ineffective' ? { color: 'rgb(216, 214, 77)' } : { color: 'white' }}>{damage.effectiveness}</b> {damage.total}</h5>}
+                                        <div className='name'>{el.name}</div>
+                                        {((hitEffect && !isMyTurn) && taunt.target === i) && <h5><b style={damage.effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : damage.effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : damage.effectiveness === 'Ineffective' ? { color: 'rgb(216, 214, 77)' } : { color: 'white' }}>{damage.effectiveness}</b> {damage.total}</h5>}
                                     </div>
                                 )
                             })}
