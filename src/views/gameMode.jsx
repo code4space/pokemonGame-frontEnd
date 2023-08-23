@@ -10,8 +10,6 @@ export default function GameModePage() {
         return state.UserReducer.username
     })
 
-    console.log(username)
-
     function Move(route) {
         clickSound()
         return navigate(route)

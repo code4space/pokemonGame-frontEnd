@@ -22,12 +22,12 @@ function PreparePvP({ deck }) {
 
     const [isDeck, setIsDeck] = useState(null)
     const [myDeck, setMyDeck] = useState(deck)
+    const [socket, setSocket] = useState(null);
+    const [roomInfo, setRoomInfo] = useState(null)
     const [opponent, setOpponent] = useState({
         username: '',
         deck: []
     })
-    const [socket, setSocket] = useState(null);
-    const [roomInfo, setRoomInfo] = useState(null)
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -36,8 +36,6 @@ function PreparePvP({ deck }) {
     const totalPokemon = useSelector((state) => state.PokemonReducer.totalPokemon)
     const username = useSelector((state) => state.UserReducer.username)
     const totalPage = Math.ceil(totalPokemon / 50)
-
-    console.log(username)
 
     useEffect(() => {
         function fetchData() {
@@ -58,12 +56,10 @@ function PreparePvP({ deck }) {
         newSocket.emit('joinRoom', { username }); // Emit the 'joinRoom' event when connecting
 
         newSocket.on('roomInfo', ({ roomName, users, disconnect, username: opponentName }) => {
-            console.log('-->', opponentName)
-            if (username !== opponentName && opponentName) {
-                setOpponent(prevData => ({ ...prevData, username: opponentName }))
-                console.log('masu', opponentName)
+            if (users === 2) {
+                newSocket.emit('opponent-name', { room: roomName, username})
+                setIsFind(false)
             }
-            if (users === 2) setIsFind(false)
             if (disconnect) {
                 newSocket.disconnect();
                 navigate('/')
@@ -79,8 +75,12 @@ function PreparePvP({ deck }) {
         });
 
         newSocket.on('opponent-deck', ({ opponentDeck, opponentName }) => {
-            if (opponent.username === opponentName) setOpponent(prevData => ({ ...prevData, deck: opponentDeck }))
+            if (username === opponentName) setOpponent(prevData => ({ ...prevData, deck: opponentDeck }))
         });
+
+        newSocket.on('opponent-name', ({ opponentName }) => {
+            if (username !== opponentName) setOpponent(prevData => ({ ...prevData, username: opponentName }))
+        })
 
         return () => {
             newSocket.off('opponent-deck', (data) => setOpponent(prevData => ({ ...prevData, deck: data.opponentDeck })));
@@ -167,7 +167,6 @@ function PreparePvP({ deck }) {
         handleCloseButtonDetail()
     }
 
-    console.log(opponent.username, 'opponent')
     if (isFind || isLoading) return <LoadingScreen find={isFind ? true : false} />
     else return (
         <div className="lobby">

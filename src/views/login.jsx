@@ -54,7 +54,6 @@ export default function LoginPage() {
       },
     })
       .then((res) => {
-        console.log(res)
         if (res.status !== 201) {
           throw new Error("something went wrong");
         }

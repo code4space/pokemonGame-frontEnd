@@ -1,7 +1,6 @@
 
 
 export default function InstructionPage({ close, sight, pokemon }) {
-    console.log(pokemon)
     if (sight) return (
         <div className="nav-opt">
             <div className="nav-bg" onClick={close}></div>

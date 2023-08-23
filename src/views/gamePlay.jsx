@@ -604,7 +604,6 @@ export default function GamePlayPage() {
                                         {(healAnimation && targetHeal === null) && <HealingAnimation />}
                                         {(healAnimation && targetHeal === i) && <HealingAnimation />}
                                         {healMenu && <Select />}
-                                        {console.log(charge)}
                                         {(taunt.target === i && taunt.round !== null) ? <RoaringAnimation /> : null}
 
                                         <span className='hp-bar'><p>Hp.</p> <span className='hp'>
