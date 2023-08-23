@@ -11,6 +11,7 @@ import LosePage from "../views/losePage";
 import WinPage from "../views/winPage";
 import GameModePage from "../views/gameMode";
 import PagePvP from "../views/pvp";
+import PreparePvP from "../views/preparePvP";
 
 const router = createBrowserRouter([
     {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
                     {
                         path: '/pvp',
                         element: <PagePvP />
+                    },
+                    {
+                        path: '/pvp/draft',
+                        element: <PreparePvP />
                     },
                     {
                         path: '/mode',

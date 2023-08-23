@@ -13,7 +13,7 @@
 }
 
 .deck-box {
-  height: 100px;
+  height: 90px;
 }
 
 .select-detail {
@@ -47,13 +47,8 @@
 .battle {
   position: absolute;
   bottom: 30px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  animation: title-collection 1.5s;
   background-color: rgb(48, 48, 48);
   transition: 0.1s all ease;
-  overflow: hidden;
   padding: 10px;
 }
 
@@ -61,23 +56,28 @@
   box-shadow: 2px 4px 0 rgba(0, 0, 0, 0.7),
     inset -2px -2px 0 rgba(0, 0, 0, 0.5),
     inset 2px 2px 0 rgba(0, 0, 0, 0.2);
-
   bottom: 32px;
-
-  background-color: rgb(56, 56, 56);
+  filter: brightness(1.2);
 }
 
 .battle:active {
   box-shadow: 2px 0px 0 rgba(0, 0, 0, 0.7),
     inset -2px -2px 0 rgba(0, 0, 0, 0.5),
     inset 2px 2px 0 rgba(0, 0, 0, 0.2);
-
-
   bottom: 30px;
 }
 
 .battle p {
   font-size: 20px;
+}
+
+p.ready {
+  font-family: var(--alt-font);
+  font-size: 10px;
+  color: #29c94f;
+  position: absolute;
+  right: 20px;
+  bottom: 0;
 }
 
 @media only screen and (max-width:420px) {
@@ -99,5 +99,12 @@
 
   .battle p {
     font-size: 15px;
+  }
+}
+
+@media only screen and (max-width: 540px) {
+  .logout.ready {
+    bottom: 10px;
+    right: 10px;
   }
 }

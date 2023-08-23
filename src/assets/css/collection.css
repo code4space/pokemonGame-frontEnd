@@ -86,6 +86,7 @@
   .collection-title span {
     bottom: 20px;
     left: 20px;
+    font-size: 13px;
   }
 
   .collection-title .logout {

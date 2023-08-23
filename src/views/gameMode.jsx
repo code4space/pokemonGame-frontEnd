@@ -26,7 +26,7 @@ export default function GameModePage() {
             <div className="pixelated-border pixelated-border-effect button-lobby" onClick={() => { Move('/prepare') }}>
                 Solo
             </div>
-            <div className="pixelated-border pixelated-border-effect button-lobby" onClick={() => { handlePvP('/pvp') }}>
+            <div className="pixelated-border pixelated-border-effect button-lobby" onClick={() => { handlePvP('/pvp/draft') }}>
                 PvP
             </div>
         </div>

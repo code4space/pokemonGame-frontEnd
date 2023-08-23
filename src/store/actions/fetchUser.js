@@ -18,6 +18,7 @@ export function getUserInfo() {
         headers: { access_token: localStorage.getItem('access_token') },
       })
       const data = response.data.data
+      console.log(data)
       dispatch(userFetchSuccess({ gacha: data.gacha, balls: data.balls, draw: data.draw, username: data.username }));
     } catch (error) {
       console.log(error);
