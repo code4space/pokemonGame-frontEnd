@@ -16,11 +16,12 @@ function PreparePvP({ deck }) {
     const [isLoading, setIsLoading] = useState(true)
     const [activeSort, setActiveSort] = useState(false)
     const [activeDetail, setActiveDetail] = useState(false)
-    const [selectedPokemon, setSelectedPokemon] = useState(null)
+    const [activeDetailOpponent, setActiveDetailOpponent] = useState(false)
+    const [selectedPokemon, setSelectedPokemon] = useState()
     const [isFind, setIsFind] = useState(true)
     const [ready, setReady] = useState(false)
 
-    const [isDeck, setIsDeck] = useState(null)
+    const [isDeck, setIsDeck] = useState(false)
     const [myDeck, setMyDeck] = useState(deck)
     const [socket, setSocket] = useState(null);
     const [roomInfo, setRoomInfo] = useState(null)
@@ -52,12 +53,13 @@ function PreparePvP({ deck }) {
     useEffect(() => {
         const newSocket = io.connect(baseUrl);
         setSocket(newSocket)
+        console.log('masuk')
 
         newSocket.emit('joinRoom', { username }); // Emit the 'joinRoom' event when connecting
 
         newSocket.on('roomInfo', ({ roomName, users, disconnect, username: opponentName }) => {
             if (users === 2) {
-                newSocket.emit('opponent-name', { room: roomName, username})
+                newSocket.emit('opponent-name', { room: roomName, username })
                 setIsFind(false)
             }
             if (disconnect) {
@@ -102,6 +104,12 @@ function PreparePvP({ deck }) {
         setSelectedPokemon(index)
     }
 
+    function handleButtonDetailOpponent(index, deck) {
+        clickSound()
+        setActiveDetailOpponent(!activeDetailOpponent)
+        setSelectedPokemon(index)
+    }
+
     function handleCloseButtonDetail() {
         setActiveDetail(!activeDetail)
         setIsDeck(false)
@@ -140,6 +148,7 @@ function PreparePvP({ deck }) {
         setMyDeck(temp)
         socket.emit('opponent-deck', { room: roomInfo, opponentDeck: temp, opponentName: opponent.username })
         handleCloseButtonDetail()
+        setReady(false)
     }
 
     function readyButton() {
@@ -157,6 +166,7 @@ function PreparePvP({ deck }) {
         }
         clickSound()
         setReady(!ready)
+        socket.emit('ready', { ready, opponentName: opponent.username, room: roomInfo })
     }
 
     function discard() {
@@ -164,7 +174,9 @@ function PreparePvP({ deck }) {
         let temp = myDeck
         temp.splice(selectedPokemon, 1);
         setMyDeck(temp)
+        setReady(false)
         handleCloseButtonDetail()
+        socket.emit('opponent-deck', { room: roomInfo, opponentDeck: temp, opponentName: opponent.username })
     }
 
     if (isFind || isLoading) return <LoadingScreen find={isFind ? true : false} />
@@ -173,7 +185,7 @@ function PreparePvP({ deck }) {
             <div className="collection-title" style={{ height: 'auto', fontSize: '13px' }}>
                 <h1 className="title-deck">Enemy Deck</h1>
             </div>
-            <CollectionBox pokemon={opponent.deck} handleButtonDetail={handleButtonDetail} deck={true} />
+            <CollectionBox pokemon={opponent.deck} handleButtonDetail={handleButtonDetailOpponent} deck={true} />
             <div className="collection-title" style={{ height: 'auto', marginTop: '10px', fontSize: '13px' }}>
                 <h1 className="title-deck">Your Deck</h1>
             </div>
@@ -181,9 +193,18 @@ function PreparePvP({ deck }) {
             <CollectionBox pokemon={pokemon} handleButtonDetail={handleButtonDetail} height={'180px'} />
             {activeDetail &&
                 <div className="select-detail">
+                    {console.log(isDeck)}
                     <span className="bg-select" onClick={handleCloseButtonDetail}></span>
                     <CardDetail pokemon={isDeck ? myDeck[selectedPokemon] : pokemon[selectedPokemon]} />
                     {isDeck ? <button className="logout" onClick={discard}>Discard</button> : <button className="logout" onClick={addToMyDeck} style={{ backgroundColor: 'rgb(112, 157, 255)' }}>Select</button>}
+                </div>}
+            {activeDetailOpponent &&
+                <div className="select-detail">
+                    <span className="bg-select" onClick={() => {
+                        clickSound()
+                        setActiveDetailOpponent(false)
+                    }}></span>
+                    <CardDetail pokemon={opponent.deck[selectedPokemon]} />
                 </div>}
             <div className="paging">
                 <button onClick={() => back(page)} className="logout" style={page < 2 ? { opacity: '0', pointerEvents: 'none' } : null}>Back</button>
