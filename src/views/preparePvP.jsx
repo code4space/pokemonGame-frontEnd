@@ -5,8 +5,6 @@ import { getPokemon } from "../store/actions/fetchPokemon";
 import { clickSound } from "../components/playSound";
 import CardDetail from "../components/cardDetail";
 import { storeMyDeck } from "../store/actions/setGameSettings";
-import io from 'socket.io-client';
-import { baseUrl } from "../constant/url";
 import LoadingScreen from "../components/loading";
 import Swal from "sweetalert2";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -35,15 +33,14 @@ function PreparePvP({ deck }) {
     const totalPage = Math.ceil(totalPokemon / 50)
 
     useEffect(() => {
-        function fetchData() {
+        (function fetchData() {
             try {
                 dispatch(getPokemon());
                 setIsLoading(false);
             } catch (error) {
                 console.error(error);
             }
-        }
-        fetchData();
+        })()
     }, [dispatch])
 
     useEffect(() => {
@@ -149,7 +146,7 @@ function PreparePvP({ deck }) {
         socket.emit('opponent-deck', { room: roomInfo, opponentDeck: temp, opponentName: opponent.username })
     }
 
-    if (isLoading) return <LoadingScreen/>
+    if (isLoading) return <LoadingScreen />
     else return (
         <div className="lobby">
             <div className="collection-title" style={{ height: 'auto', fontSize: '13px' }}>
