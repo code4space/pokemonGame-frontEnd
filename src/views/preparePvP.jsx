@@ -9,7 +9,7 @@ import io from 'socket.io-client';
 import { baseUrl } from "../constant/url";
 import LoadingScreen from "../components/loading";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 
 function PreparePvP({ deck }) {
@@ -18,20 +18,16 @@ function PreparePvP({ deck }) {
     const [activeDetail, setActiveDetail] = useState(false)
     const [activeDetailOpponent, setActiveDetailOpponent] = useState(false)
     const [selectedPokemon, setSelectedPokemon] = useState()
-    const [isFind, setIsFind] = useState(true)
     const [ready, setReady] = useState(false)
 
     const [isDeck, setIsDeck] = useState(false)
     const [myDeck, setMyDeck] = useState(deck)
-    const [socket, setSocket] = useState(null);
-    const [roomInfo, setRoomInfo] = useState(null)
-    const [opponent, setOpponent] = useState({
-        username: '',
-        deck: []
-    })
+    const [opponent, setOpponent] = useOutletContext().opponent
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const socket = useOutletContext().socket
+    const roomInfo = useOutletContext().roomInfo
     const pokemon = useSelector((state) => state.PokemonReducer.pokemon)
     const page = useSelector((state) => state.PokemonReducer.page)
     const totalPokemon = useSelector((state) => state.PokemonReducer.totalPokemon)
@@ -51,44 +47,18 @@ function PreparePvP({ deck }) {
     }, [dispatch])
 
     useEffect(() => {
-        const newSocket = io.connect(baseUrl);
-        setSocket(newSocket)
-        console.log('masuk')
-
-        newSocket.emit('joinRoom', { username }); // Emit the 'joinRoom' event when connecting
-
-        newSocket.on('roomInfo', ({ roomName, users, disconnect, username: opponentName }) => {
-            if (users === 2) {
-                newSocket.emit('opponent-name', { room: roomName, username })
-                setIsFind(false)
-            }
-            if (disconnect) {
-                newSocket.disconnect();
-                navigate('/')
-                Swal.fire({
-                    position: "middle",
-                    icon: "error",
-                    title: "Your oppenent disconnected",
-                    showConfirmButton: true,
-                    timer: 3000,
-                });
-            }
-            setRoomInfo(roomName);
-        });
-
-        newSocket.on('opponent-deck', ({ opponentDeck, opponentName }) => {
+        socket.on('opponent-deck', ({ opponentDeck, opponentName }) => {
             if (username === opponentName) setOpponent(prevData => ({ ...prevData, deck: opponentDeck }))
         });
 
-        newSocket.on('opponent-name', ({ opponentName }) => {
-            if (username !== opponentName) setOpponent(prevData => ({ ...prevData, username: opponentName }))
+        socket.on('ready', ({ readyStatus, opponentName }) => {
+            if (username === opponentName) setOpponent(prevData => ({ ...prevData, ready: !readyStatus }))
         })
-
-        return () => {
-            newSocket.off('opponent-deck', (data) => setOpponent(prevData => ({ ...prevData, deck: data.opponentDeck })));
-            newSocket.disconnect();
-        };
     }, []);
+
+    useEffect(() => {
+        if (ready && opponent.ready) navigate('/pvp')
+    }, [ready, opponent.ready])
 
     function sort() {
         const newActiveSort = !activeSort;
@@ -179,13 +149,13 @@ function PreparePvP({ deck }) {
         socket.emit('opponent-deck', { room: roomInfo, opponentDeck: temp, opponentName: opponent.username })
     }
 
-    if (isFind || isLoading) return <LoadingScreen find={isFind ? true : false} />
+    if (isLoading) return <LoadingScreen/>
     else return (
         <div className="lobby">
             <div className="collection-title" style={{ height: 'auto', fontSize: '13px' }}>
                 <h1 className="title-deck">Enemy Deck</h1>
             </div>
-            <CollectionBox pokemon={opponent.deck} handleButtonDetail={handleButtonDetailOpponent} deck={true} />
+            <CollectionBox pokemon={opponent.deck} handleButtonDetail={handleButtonDetailOpponent} deck={true} borderColor={opponent.ready ? '#29c94f' : ''} />
             <div className="collection-title" style={{ height: 'auto', marginTop: '10px', fontSize: '13px' }}>
                 <h1 className="title-deck">Your Deck</h1>
             </div>
