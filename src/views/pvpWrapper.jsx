@@ -3,8 +3,9 @@ import { io } from "socket.io-client";
 import { useNavigate, Outlet } from "react-router-dom";
 import { baseUrl } from "../constant/url";
 import LoadingScreen from "../components/loading";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import { emptyingTheDeck } from "../store/actions/setGameSettings";
 
 const PvPWrapper = () => {
     const [socket, setSocket] = useState(null);
@@ -18,11 +19,13 @@ const PvPWrapper = () => {
 
     const navigate = useNavigate();
     const username = useSelector((state) => state.UserReducer.username)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         const newSocket = io.connect(baseUrl);
         setSocket(newSocket);
-
+        dispatch(emptyingTheDeck())
+        
         newSocket.emit('joinRoom');
 
         newSocket.on('roomInfo', ({ roomName, users, disconnect, username: opponentName }) => {
@@ -58,7 +61,7 @@ const PvPWrapper = () => {
     }, []);
 
     if (isFind) return <LoadingScreen find={isFind} />
-    return <Outlet context={{ socket, opponent: [opponent, setOpponent], roomInfo}} />
+    return <Outlet context={{ socket, opponent: [opponent, setOpponent], roomInfo }} />
 };
 
 export default PvPWrapper;

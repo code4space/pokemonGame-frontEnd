@@ -160,7 +160,6 @@ function PreparePvP({ deck }) {
             <CollectionBox pokemon={pokemon} handleButtonDetail={handleButtonDetail} height={'180px'} />
             {activeDetail &&
                 <div className="select-detail">
-                    {console.log(isDeck)}
                     <span className="bg-select" onClick={handleCloseButtonDetail}></span>
                     <CardDetail pokemon={isDeck ? myDeck[selectedPokemon] : pokemon[selectedPokemon]} />
                     {isDeck ? <button className="logout" onClick={discard}>Discard</button> : <button className="logout" onClick={addToMyDeck} style={{ backgroundColor: 'rgb(112, 157, 255)' }}>Select</button>}

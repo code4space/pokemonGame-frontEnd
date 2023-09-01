@@ -1,4 +1,4 @@
-import { SET_IS_HARD, USER, SET_BATTLE_DECK } from "../actions/actionType";
+import { SET_IS_HARD, USER, SET_BATTLE_DECK, SET_DECK_TO_EMPTY } from "../actions/actionType";
 
 const initialState = {
     username: '',
@@ -28,6 +28,11 @@ function UserReducer(state = initialState, action) {
             return {
                 ...state,
                 deck: action.payload
+            }
+        case SET_DECK_TO_EMPTY:
+            return {
+                ...state,
+                deck: []
             }
         default:
             return state;

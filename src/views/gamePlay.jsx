@@ -45,6 +45,8 @@ export default function GamePlayPage() {
     const [taunt, setTaunt] = useState({ round: null, target: 0 })
     const [charge, setCharge] = useState({})
 
+    console.log(abilityAndItem)
+
     // set useEffect (if clear the function will run normally)
     const [clear, setClear] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
