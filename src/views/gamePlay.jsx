@@ -45,8 +45,6 @@ export default function GamePlayPage() {
     const [taunt, setTaunt] = useState({ round: null, target: 0 })
     const [charge, setCharge] = useState({})
 
-    console.log(abilityAndItem)
-
     // set useEffect (if clear the function will run normally)
     const [clear, setClear] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
@@ -451,7 +449,7 @@ export default function GamePlayPage() {
             setDopping((prevState) => {
                 return { ...prevState, ...newState };
             });
-        } else if (itemName === 'Focus Sash') {
+        } else if (itemNme === 'Focus Sash') {
             const newState = { [myDeck[turn].name]: { round: 0 } }
             setFocusSash((prevState) => {
                 return { ...prevState, ...newState };
