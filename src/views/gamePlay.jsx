@@ -124,7 +124,6 @@ export default function GamePlayPage() {
         setTargetEffetct(target)
         setHitEffect(true);
         const dd = damageDealt(myDeck[turn]?.attack, enemies[target].def, myDeck[turn].power, enemies[target].type, myDeck[turn].type)
-        setDamage({ ...damage, total: dd.damage, effectiveness: dd.status })
         if (myDeck[turn].role === 'Combat') {
             if (dd.status === 'Effective') dd.damage += dd.damage * (50 / 100)
         }
@@ -137,6 +136,7 @@ export default function GamePlayPage() {
             })
             dd.damage = Math.ceil(dd.damage * 2.5)
         }
+        setDamage({ ...damage, total: dd.damage, effectiveness: dd.status })
         const timer = setTimeout(async () => {
             setHitEffect(false);
             const temp = [...remainingHP]

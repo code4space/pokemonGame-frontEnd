@@ -5,8 +5,8 @@ import { useNavigate, useOutletContext } from "react-router-dom"
 import shadow from '../assets/icon/shadow.png'
 import { useEffect, useState } from "react"
 import LoadingScreen from "../components/loading"
-import { getBarrier, skillAndItem } from "../constant/helper"
-import { clickSound1 } from "../components/playSound"
+import { damageDealt, getBarrier, skillAndItem } from "../constant/helper"
+import { clickSound1, hitSound } from "../components/playSound"
 import InstructionPage from "../components/instruction"
 import bookIcon from '../assets/icon/book.png'
 
@@ -15,7 +15,7 @@ import bookIcon from '../assets/icon/book.png'
 function setThePokemonInfo(pokemon, setState) {
   let temp = {}
   pokemon.forEach((el) => {
-    const { name, role, hp, attack, def, type } = el
+    const { name, role, hp, attack, def, type, power } = el
     temp[name] = {
       role,
       ability: skillAndItem.find(el1 => el1.role === role).ability,
@@ -24,7 +24,8 @@ function setThePokemonInfo(pokemon, setState) {
       barrier: 0,
       attack,
       def,
-      type
+      type,
+      power
     };
   })
   setState(temp)
@@ -48,6 +49,7 @@ export default function PagePvP() {
 
   // Game flow ~~
   const [turn, setTurn] = useState({ index: 0, isMyTurn: null })
+  const [hitEffect, setHitEffect] = useState({ damage: 0, effectiveness: null, target: undefined })
   const [menu, setMenu] = useState({
     isMenu: true,
     attackMenu: false,
@@ -84,18 +86,23 @@ export default function PagePvP() {
       });
     };
 
-    function handleSetBarrier({ pokemon, name }) {
-      console.log('masuk', pokemon, name)
+    function handleSetPokemon({ pokemon, name }) {
       if (opponent.username !== name) setOpponentPokemon(pokemon)
     }
 
+    function handleAttack({ target, name, damage }) {
+      if (opponent.username !== name) attackingTarget(target, false, damage)
+    }
+
     socket.on('set-first-turn', handleSetFirstTurn);
-    socket.on('update-pokemon', handleSetBarrier)
+    socket.on('update-pokemon', handleSetPokemon)
+    socket.on('attack', handleAttack)
 
     // Clean up event listeners when the component unmounts
     return () => {
       socket.off('set-first-turn', handleSetFirstTurn);
-      socket.off('update-pokemon', handleSetFirstTurn);
+      socket.off('update-pokemon', handleSetPokemon);
+      socket.off('attack', handleAttack)
     };
   }, []);
 
@@ -103,8 +110,6 @@ export default function PagePvP() {
     if (firstTurn?.me > firstTurn?.opponent) setTurn({ ...turn, isMyTurn: true })
     else setTurn({ ...turn, isMyTurn: false })
   }, [firstTurn])
-
-  console.log(myPokemon)
 
   useEffect(() => {
     const handleAddTurn = ({ name }) => {
@@ -200,6 +205,76 @@ export default function PagePvP() {
     setNextTurn()
   }
 
+  function attackingTarget(target, toOpponent, damage) {
+    setMenu({ ...menu, attackMenu: false, isMenu: true })
+    hitSound()
+
+    let attacker = toOpponent ? { ...myPokemon[getName(myPokemon, turn)] } : { ...opponentPokemon[getName(opponentPokemon, turn)] }
+    let defender = toOpponent ? { ...opponentPokemon[target] } : { ...myPokemon[target] }
+    const dd = damage || damageDealt(attacker.attack, defender.def, attacker.power, defender.type, attacker.type)
+    if (toOpponent) socket.emit('attack', { room, name: opponent.username, target, damage: dd })
+
+    if (attacker.role === 'Combat' && dd.status === 'Effective') dd.damage += Math.floor(dd.damage * (50 / 100))
+    setHitEffect({ damage: dd.damage, effectiveness: dd.status, target })
+
+    const timer = setTimeout(async () => {
+      setHitEffect({ damage: 0, effectiveness: null, target: undefined })
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }
+
+  // HTML function
+  function renderDialogueBox(condition) {
+    const result = {
+      true: <>
+        <p>Lv.{getDetail(deck, myPokemon, turn).level} {getName(myPokemon, turn).toUpperCase()} Turn</p>
+        {<div className={menu.isMenu ? 'turn-opt menu' : 'turn-opt'}>
+          {menu.attackMenu && <>{Object.keys(opponentPokemon).map((el) => {
+            return <span key={el} onClick={() => { attackingTarget(el, true) }}>* Lv. {getDetail(opponent.deck, opponentPokemon, turn).level} {el} [{opponentPokemon[el].type.elements.join(', ')}]</span>
+          })}
+            <span onClick={() => back('attackMenu')} style={{ marginTop: '20px' }}>* Back</span></>
+          }
+          {menu.sightMenu && <>{Object.keys(opponentPokemon).map((el) => {
+            return <span key={el} onClick={() => seeTarget(el)}>* Lv. {getDetail(opponent.deck, opponentPokemon, turn).level} {el} [{opponentPokemon[el].type.elements.join(', ')}]</span>
+          })}
+            <span onClick={() => back('sightMenu')} style={{ marginTop: '20px' }}>* Back</span></>
+          }
+          {menu.abilityMenu && <>{myPokemon[getName(myPokemon, turn)].ability.map((el) => {
+            return <span key={el.name}>* {el.name} <i>({el.description})</i></span>
+          })}
+            <span onClick={() => back('abilityMenu')} style={{ marginTop: '20px' }}>* Back</span></>
+          }
+          {menu.itemMenu && <>{myPokemon[getName(myPokemon, turn)].item.map((el) => {
+            return <span key={el.name}>* {el.name} <i>({el.description})</i></span>
+          })}
+            <span onClick={() => back('itemMenu')} style={{ marginTop: '20px' }}>* Back</span></>
+          }
+          {menu.isMenu && <><span onClick={() => setActiveMenu('attackMenu')}>* Attack</span>
+            <span onClick={() => handleButtonDef(getName(myPokemon, turn))}>* Def</span>
+            <span onClick={() => setActiveMenu('abilityMenu')}>* Skill</span>
+            <span onClick={() => setActiveMenu('itemMenu')}>* Item</span>
+            <span onClick={() => setActiveMenu('sightMenu')}>* Sight</span>
+          </>}
+        </div>}
+      </>,
+      false: <>
+        <p>ENEMY turn</p>
+        <div className='turn-opt'>
+          <span>{getDetail(opponent.deck, opponentPokemon, turn).name} move...</span>
+        </div>
+      </>,
+      hitEffect: <>
+        <p>Lv.{getDetail(deck, myPokemon, turn).level} {getName(myPokemon, turn).toUpperCase()} Turn</p>
+        <div className='turn-opt'>
+          <span style={{ marginTop: '20px' }}>...Action</span>
+        </div>
+      </>
+    }
+
+    return result[condition]
+  }
+
   if (!myPokemon || !opponentPokemon) return <LoadingScreen />
   return (
     <>
@@ -223,7 +298,7 @@ export default function PagePvP() {
               const { hp, barrier } = opponentPokemon[el]
               return (
                 <div className="pokemon-img-ctrl" key={el}>
-                  <img src={frontView} alt={el + '_img'} />
+                  <img src={frontView} alt={el + '_img'} style={(hitEffect.target === el && turn.isMyTurn) ? { animation: 'shake 0.4s linear 0s, hitEffect 1s linear 0s' } : null} />
                   <div className="hp-bar">
                     <p>Hp.</p>
                     <span className="hp">
@@ -232,6 +307,7 @@ export default function PagePvP() {
                     </span>
                   </div>
                   <div className="name">{el}</div>
+                  {(hitEffect.target === el && turn.isMyTurn) && <h5><b style={hitEffect.effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : hitEffect.effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : hitEffect.effectiveness === 'Ineffective' ? { color: 'rgb(216, 214, 77)' } : { color: 'white' }}>{hitEffect.effectiveness}</b> {hitEffect.damage}</h5>}
                 </div>
               )
             })}
@@ -246,7 +322,7 @@ export default function PagePvP() {
               const { hp, barrier } = myPokemon[el]
               return (
                 <div className="pokemon-img-ctrl" key={el}>
-                  <img src={backView} alt={el + '_img'} />
+                  <img src={backView} alt={el + '_img'} style={(hitEffect.target === el && !turn.isMyTurn) ? { animation: 'shake 0.4s linear 0s, hitEffect 1s linear 0s' } : null} />
                   <div className="hp-bar">
                     <p>Hp.</p>
                     <span className="hp">
@@ -255,6 +331,7 @@ export default function PagePvP() {
                     </span>
                   </div>
                   <div className="name">{el}</div>
+                  {(hitEffect.target === el && !turn.isMyTurn) && <h5><b style={hitEffect.effectiveness === 'Normal' ? { color: 'rgb(93, 216, 77)' } : hitEffect.effectiveness === 'Effective' ? { color: 'rgb(216, 77, 77)' } : hitEffect.effectiveness === 'Ineffective' ? { color: 'rgb(216, 214, 77)' } : { color: 'white' }}>{hitEffect.effectiveness}</b> {hitEffect.damage}</h5>}
                 </div>
               )
             })}
@@ -266,45 +343,7 @@ export default function PagePvP() {
             <div className="dialogue-border1">
               <div className="dialogue-border2">
                 <div className="dialogue-border3">
-                  {turn.isMyTurn ?
-                    <>
-                      <p>Lv.{getDetail(deck, myPokemon, turn).level} {getName(myPokemon, turn).toUpperCase()} Turn</p>
-                      {<div className={menu.isMenu ? 'turn-opt menu' : 'turn-opt'}>
-                        {menu.attackMenu && <>{Object.keys(opponentPokemon).map((el) => {
-                          return <span key={el}>* Lv. {getDetail(opponent.deck, opponentPokemon, turn).level} {el} [{opponentPokemon[el].type.elements.join(', ')}]</span>
-                        })}
-                          <span onClick={() => back('attackMenu')} style={{ marginTop: '20px' }}>* Back</span></>
-                        }
-                        {menu.sightMenu && <>{Object.keys(opponentPokemon).map((el) => {
-                          return <span key={el} onClick={() => seeTarget(el)}>* Lv. {getDetail(opponent.deck, opponentPokemon, turn).level} {el} [{opponentPokemon[el].type.elements.join(', ')}]</span>
-                        })}
-                          <span onClick={() => back('sightMenu')} style={{ marginTop: '20px' }}>* Back</span></>
-                        }
-                        {menu.abilityMenu && <>{myPokemon[getName(myPokemon, turn)].ability.map((el) => {
-                          return <span key={el.name}>* {el.name} <i>({el.description})</i></span>
-                        })}
-                          <span onClick={() => back('abilityMenu')} style={{ marginTop: '20px' }}>* Back</span></>
-                        }
-                        {menu.itemMenu && <>{myPokemon[getName(myPokemon, turn)].item.map((el) => {
-                          return <span key={el.name}>* {el.name} <i>({el.description})</i></span>
-                        })}
-                          <span onClick={() => back('itemMenu')} style={{ marginTop: '20px' }}>* Back</span></>
-                        }
-                        {menu.isMenu && <><span onClick={() => setActiveMenu('attackMenu')}>* Attack</span>
-                          <span onClick={() => handleButtonDef(getName(myPokemon, turn))}>* Def</span>
-                          <span onClick={() => setActiveMenu('abilityMenu')}>* Skill</span>
-                          <span onClick={() => setActiveMenu('itemMenu')}>* Item</span>
-                          <span onClick={() => setActiveMenu('sightMenu')}>* Sight</span>
-                        </>}
-                      </div>}
-                    </> :
-                    <>
-                      <p>ENEMY turn</p>
-                      <div className='turn-opt'>
-                        <span>{getDetail(opponent.deck, opponentPokemon, turn).name} move...</span>
-                      </div>
-                    </>
-                  }
+                  {renderDialogueBox(hitEffect.target ? 'hitEffect' : turn.isMyTurn)}
                   <div className='book' onClick={handleButtonInstruction}><img src={bookIcon} alt="book" /></div>
                 </div>
               </div>
