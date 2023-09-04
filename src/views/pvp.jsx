@@ -90,19 +90,13 @@ export default function PagePvP() {
       if (opponent.username !== name) setOpponentPokemon(pokemon)
     }
 
-    function handleAttack({ target, name, damage }) {
-      if (opponent.username !== name) attackingTarget(target, false, damage)
-    }
-
     socket.on('set-first-turn', handleSetFirstTurn);
     socket.on('update-pokemon', handleSetPokemon)
-    socket.on('attack', handleAttack)
 
     // Clean up event listeners when the component unmounts
     return () => {
       socket.off('set-first-turn', handleSetFirstTurn);
       socket.off('update-pokemon', handleSetPokemon);
-      socket.off('attack', handleAttack)
     };
   }, []);
 
@@ -122,11 +116,17 @@ export default function PagePvP() {
       }
     };
 
+    function handleAttack({ target, name, damage }) {
+      if (opponent.username !== name) attackingTarget(target, false, damage)
+    }
+
     socket.on('add-turn', handleAddTurn);
+    socket.on('attack', handleAttack)
 
     // Clean up the event listener when the component unmounts
     return () => {
       socket.off('add-turn', handleAddTurn);
+      socket.off('attack', handleAttack)
     };
   }, [opponentPokemon, turn])
 
@@ -205,6 +205,8 @@ export default function PagePvP() {
     setNextTurn()
   }
 
+  console.log(firstTurn)
+
   function attackingTarget(target, toOpponent, damage) {
     setMenu({ ...menu, attackMenu: false, isMenu: true })
     hitSound()
@@ -216,9 +218,26 @@ export default function PagePvP() {
 
     if (attacker.role === 'Combat' && dd.status === 'Effective') dd.damage += Math.floor(dd.damage * (50 / 100))
     setHitEffect({ damage: dd.damage, effectiveness: dd.status, target })
-
     const timer = setTimeout(async () => {
       setHitEffect({ damage: 0, effectiveness: null, target: undefined })
+      defender.hp -= dd.damage
+
+      if (defender.hp > 0) {
+        if (toOpponent) setOpponentPokemon({ ...opponentPokemon, [target]: defender })
+        else setMyPokemon({ ...myPokemon, [target]: defender })
+      } else {
+        if (toOpponent) {
+          const copy = { ...opponentPokemon }
+          delete copy[target]
+          setOpponentPokemon(copy)
+        }
+        else {
+          const copy = { ...myPokemon }
+          delete copy[target]
+          console.log(copy, '--')
+          setMyPokemon(copy)
+        }
+      }
     }, 800);
 
     return () => clearTimeout(timer);
@@ -294,7 +313,7 @@ export default function PagePvP() {
           <img src={shadow} alt="pokemon-shadow" className='shadow' />
           <div className="pokemon-char">
             {Object.keys(opponentPokemon).map(el => {
-              const { frontView } = opponent.deck.find(({ name }) => name === el)
+              const { frontView, hp: fullHP } = opponent.deck.find(({ name }) => name === el)
               const { hp, barrier } = opponentPokemon[el]
               return (
                 <div className="pokemon-img-ctrl" key={el}>
@@ -302,8 +321,8 @@ export default function PagePvP() {
                   <div className="hp-bar">
                     <p>Hp.</p>
                     <span className="hp">
-                      <span style={{ width: `${(hp / opponentPokemon[el].hp) * 100}%` }}></span>
-                      <span style={{ width: `${(barrier / opponentPokemon[el].hp) * 100}%` }}></span>
+                      <span style={{ width: `${(hp / fullHP) * 100}%` }}></span>
+                      <span style={{ width: `${(barrier / fullHP) * 100}%` }}></span>
                     </span>
                   </div>
                   <div className="name">{el}</div>
@@ -318,7 +337,7 @@ export default function PagePvP() {
           <img src={shadow} alt="pokemon-shadow" className='shadow' />
           <div className="pokemon-char">
             {Object.keys(myPokemon).map(el => {
-              const { backView } = deck.find(({ name }) => name === el)
+              const { backView, hp: fullHP } = deck.find(({ name }) => name === el)
               const { hp, barrier } = myPokemon[el]
               return (
                 <div className="pokemon-img-ctrl" key={el}>
@@ -326,8 +345,8 @@ export default function PagePvP() {
                   <div className="hp-bar">
                     <p>Hp.</p>
                     <span className="hp">
-                      <span style={{ width: `${(hp / myPokemon[el].hp) * 100}%` }}></span>
-                      <span style={{ width: `${(barrier / myPokemon[el].hp) * 100}%` }}></span>
+                      <span style={{ width: `${(hp / fullHP) * 100}%` }}></span>
+                      <span style={{ width: `${(barrier / fullHP) * 100}%` }}></span>
                     </span>
                   </div>
                   <div className="name">{el}</div>
