@@ -45,7 +45,7 @@ export default function WinPage() {
                     {blink && <>
                         <div className='win-content pixelated-border'>
                             <h2>CONGRATS</h2>
-                            <p>Here are your rewards for beating the {state.difficulty === false ? 'normal' : 'extreme'} difficulty, and guess what? Your Pokémon in the deck just leveled up by 1!</p>
+                            <p>Here are your rewards for beating the {state.difficulty === false ? 'normal' : 'extreme'} difficulty, Your Pokémon in the deck just leveled up by 1!</p>
                             <div className='reward-control'>
                                 <div className='ball-reward'>
                                     <img src={pokeBall} alt="pokeBall" />

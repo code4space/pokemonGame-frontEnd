@@ -40,6 +40,14 @@ const router = createBrowserRouter([
                                 path: '/pvp/draft',
                                 element: <PreparePvP/>
                             },
+                            {
+                                path: '/pvp/win',
+                                element: <PreparePvP/>
+                            },
+                            {
+                                path: '/pvp/lose',
+                                element: <PreparePvP/>
+                            },
                         ]
                     },
                     {

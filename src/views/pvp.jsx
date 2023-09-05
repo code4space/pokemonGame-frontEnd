@@ -106,11 +106,11 @@ export default function PagePvP() {
   }, [firstTurn])
 
   useEffect(() => {
-    const handleAddTurn = ({ name }) => {
+    const handleAddTurn = ({ name, pokemon }) => {
       if (opponent.username !== name) {
-        if (turn.index + 1 === Object.keys(opponentPokemon).length) {
+        if (turn.index + 1 >= Object.keys(opponentPokemon).length) {
           setTurn({ isMyTurn: true, index: 0 })
-          cleanBarrier(myPokemon, setMyPokemon)
+          cleanBarrier(pokemon, setMyPokemon)
         }
         else setTurn(prevState => ({ ...prevState, index: prevState.index + 1 }))
       }
@@ -128,18 +128,18 @@ export default function PagePvP() {
       socket.off('add-turn', handleAddTurn);
       socket.off('attack', handleAttack)
     };
-  }, [opponentPokemon, turn])
+  }, [opponentPokemon, turn, myPokemon])
 
   // Other functions
-  function setNextTurn() {
-    if (turn.index + 1 === Object.keys(myPokemon).length) {
+  function setNextTurn(pokemon) {
+    if (turn.index + 1 >= Object.keys(myPokemon).length) {
       setTurn({ isMyTurn: false, index: 0 })
-      cleanBarrier(opponentPokemon, setOpponentPokemon)
+      cleanBarrier(pokemon, setOpponentPokemon)
     } else {
       setTurn(prevState => ({ ...prevState, index: prevState.index + 1 }))
     }
 
-    socket.emit('add-turn', { room, name: opponent.username })
+    socket.emit('add-turn', { room, name: opponent.username, pokemon })
   }
 
   function cleanBarrier(pokemon, setPokemon) {
@@ -202,7 +202,7 @@ export default function PagePvP() {
     //   return undefined
     // }
 
-    setNextTurn()
+    setNextTurn(opponentPokemon)
   }
 
   console.log(firstTurn)
@@ -220,21 +220,33 @@ export default function PagePvP() {
     setHitEffect({ damage: dd.damage, effectiveness: dd.status, target })
     const timer = setTimeout(async () => {
       setHitEffect({ damage: 0, effectiveness: null, target: undefined })
-      defender.hp -= dd.damage
-
-      if (defender.hp > 0) {
-        if (toOpponent) setOpponentPokemon({ ...opponentPokemon, [target]: defender })
-        else setMyPokemon({ ...myPokemon, [target]: defender })
-      } else {
+      defender.barrier -= dd.damage
+      if (defender.barrier < 0) {
+        defender.hp += defender.barrier
+        defender.barrier = 0
+      }
+      if (defender.hp > 0) { //? when pokemon still alive
+        if (toOpponent) {
+          setOpponentPokemon({ ...opponentPokemon, [target]: defender })
+          setNextTurn({ ...opponentPokemon, [target]: defender })
+        }
+        else setMyPokemon(prevState => ({ ...prevState, [target]: defender }))
+      }
+      else { //? when pokemon are dead
         if (toOpponent) {
           const copy = { ...opponentPokemon }
           delete copy[target]
+
+          //? is win
+          if (!Object.keys(copy).length) navigate('/pvp/win', {state: {difficulty: 'PvP'}})
+          setNextTurn(copy)
           setOpponentPokemon(copy)
         }
         else {
           const copy = { ...myPokemon }
           delete copy[target]
-          console.log(copy, '--')
+          //? is lose
+          if (!Object.keys(copy).length) navigate('/pvp/lose', {state: {difficulty: 'PvP'}})
           setMyPokemon(copy)
         }
       }
@@ -246,11 +258,11 @@ export default function PagePvP() {
   // HTML function
   function renderDialogueBox(condition) {
     const result = {
-      true: <>
+      true: condition === true && <>
         <p>Lv.{getDetail(deck, myPokemon, turn).level} {getName(myPokemon, turn).toUpperCase()} Turn</p>
         {<div className={menu.isMenu ? 'turn-opt menu' : 'turn-opt'}>
           {menu.attackMenu && <>{Object.keys(opponentPokemon).map((el) => {
-            return <span key={el} onClick={() => { attackingTarget(el, true) }}>* Lv. {getDetail(opponent.deck, opponentPokemon, turn).level} {el} [{opponentPokemon[el].type.elements.join(', ')}]</span>
+            return <span key={el} onClick={() => { attackingTarget(el, true) }}>* Lv. {getDetailByName(opponent.deck, el).level} {el} [{opponentPokemon[el].type.elements.join(', ')}]</span>
           })}
             <span onClick={() => back('attackMenu')} style={{ marginTop: '20px' }}>* Back</span></>
           }
@@ -280,10 +292,10 @@ export default function PagePvP() {
       false: <>
         <p>ENEMY turn</p>
         <div className='turn-opt'>
-          <span>{getDetail(opponent.deck, opponentPokemon, turn).name} move...</span>
+          <span>{getName(opponentPokemon, turn)} move...</span>
         </div>
       </>,
-      hitEffect: <>
+      hitEffect: condition === 'hitEffect' && <>
         <p>Lv.{getDetail(deck, myPokemon, turn).level} {getName(myPokemon, turn).toUpperCase()} Turn</p>
         <div className='turn-opt'>
           <span style={{ marginTop: '20px' }}>...Action</span>
@@ -362,7 +374,7 @@ export default function PagePvP() {
             <div className="dialogue-border1">
               <div className="dialogue-border2">
                 <div className="dialogue-border3">
-                  {renderDialogueBox(hitEffect.target ? 'hitEffect' : turn.isMyTurn)}
+                  {renderDialogueBox((hitEffect.target && turn.isMyTurn) ? 'hitEffect' : turn.isMyTurn)}
                   <div className='book' onClick={handleButtonInstruction}><img src={bookIcon} alt="book" /></div>
                 </div>
               </div>

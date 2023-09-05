@@ -97,7 +97,7 @@ export function damageDealt(
   enemyAttr,
   attackerAttr
 ) {
-  const modifier = Math.random() * (1 - 0.85) + 0.85;
+  const modifier = Math.random() * (0.15) + 0.85;
   let status = "Normal";
   let damage =
     (((2 / 5 + 2) * (attack / defense) * (basePower / 2)) / 50 + 2) * modifier;
