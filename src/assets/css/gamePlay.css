@@ -4,7 +4,7 @@
 
 .play-bg {
   background-color: #daf0ce;
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
   position: relative;
   padding-top: 60px;
@@ -44,7 +44,7 @@
 .pokemon-place {
   max-width: 1090px;
   width: 100vw;
-  height: 24vh;
+  height: 24dvh;
   padding: 0 3vw;
   position: relative;
 }
@@ -65,7 +65,7 @@
   position: absolute;
   max-width: 638px;
   width: 80%;
-  height: 20vh;
+  height: 20dvh;
   bottom: 15%;
   display: flex;
   flex-direction: row;
@@ -342,7 +342,7 @@
 
 .dialogue-container {
   width: 100vw;
-  height: 40vh;
+  height: 40dvh;
   background-color: #313131;
   position: absolute;
   bottom: 0;

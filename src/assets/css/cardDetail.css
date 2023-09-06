@@ -475,14 +475,14 @@
 @media only screen and (max-width: 340px) {
   .card-detail {
     width: 90vw;
-    height: 70vh;
+    height: 70dvh;
     max-width: 290px;
   }
 
   .card-detail .pokemon-img {
     width: 120px;
     height: 120px;
-    margin-top: 10vh;
+    margin-top: 10dvh;
   }
 
   .card-detail h2 {
