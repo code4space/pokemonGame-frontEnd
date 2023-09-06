@@ -205,8 +205,7 @@ export default function PagePvP() {
     setNextTurn(opponentPokemon)
   }
 
-  console.log(firstTurn)
-
+  console.log(myPokemon)
   function attackingTarget(target, toOpponent, damage) {
     setMenu({ ...menu, attackMenu: false, isMenu: true })
     hitSound()
@@ -272,7 +271,7 @@ export default function PagePvP() {
             <span onClick={() => back('sightMenu')} style={{ marginTop: '20px' }}>* Back</span></>
           }
           {menu.abilityMenu && <>{myPokemon[getName(myPokemon, turn)].ability.map((el) => {
-            return <span key={el.name}>* {el.name} <i>({el.description})</i></span>
+            return <span key={el.name} className={el.type === 'active' ? 'active-skill' : 'passive-skill'}>* {el.name} <i>({el.description})</i></span>
           })}
             <span onClick={() => back('abilityMenu')} style={{ marginTop: '20px' }}>* Back</span></>
           }

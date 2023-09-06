@@ -446,6 +446,10 @@
   position: absolute;
 }
 
+.passive-skill {
+  pointer-events: none;
+}
+
 @keyframes roaring {
   from {
     width: 0px;
@@ -474,7 +478,7 @@
     display: none;
   }
 
-  .pokemon-img-ctrl img:hover ~ div {
+  .pokemon-img-ctrl img:hover~div {
     display: flex;
   }
 
@@ -506,9 +510,11 @@
   0% {
     opacity: 1;
   }
+
   60% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
     transform: translateY(-100%);

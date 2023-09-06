@@ -98,7 +98,7 @@ function TopNavbar({ isHard, setIsHard }) {
             </div>
             {activeCredit && <div className="nav-opt">
                 <div className="nav-bg" onClick={handleButtonCredit}></div>
-                <div className="nav-content pixelated-border" style={{ maxWidth: '80vw', padding: '20px', height: '70vh', maxHeight: '60vh' }}>
+                <div className="nav-content pixelated-border" style={{ maxWidth: '80vw', padding: '20px', height: '70dvh', maxHeight: '60dvh' }}>
                     <div style={{ overflowY: 'auto', height: '100%', width: '100%', padding: '5px' }}>
                         <h2 style={{ marginBottom: '10px' }}>CREDITS</h2>
                         <p style={{ textAlign: 'center', marginBottom: '40px' }}>Thank you for trying my game! It was a personal project I completed in two weeks. While I've tried my best to fix any bugs, please

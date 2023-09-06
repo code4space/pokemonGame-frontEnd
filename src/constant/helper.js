@@ -181,7 +181,8 @@ export const skillAndItem = [
   {
     role: 'Tanker',
     ability: [
-      { name: 'Taunt', description: 'Taunting enemy for one round' }
+      { name: 'Hard Skin', description: 'Reduces damage taken', type: 'passive' },
+      { name: 'Taunt', description: 'Taunting enemy for one round', type: 'active' },
     ],
     item: [
       { name: 'Dopping', ammount: 1, description: 'Convert some def to attack for 2 rounds' },
@@ -191,7 +192,8 @@ export const skillAndItem = [
   {
     role: 'Combat',
     ability: [
-      { name: 'Charge', description: 'Deal 250% damage for the next turn' }
+      { name: 'Critical', description: 'increase effective damage', type: 'passive' },
+      { name: 'Charge', description: 'Deal 250% damage for the next turn', type: 'active' },
     ],
     item: [
       { name: 'Smoke Bomb', ammount: 1, description: 'Increase the dodge chance for 1 round' },
@@ -201,7 +203,8 @@ export const skillAndItem = [
   {
     role: 'Support',
     ability: [
-      { name: 'Heal', description: 'Heal a teammate' }
+      { name: 'Self Recover', description: 'self-regenerate small amount hp', type: 'passive' },
+      { name: 'Heal', description: 'Heal a teammate', type: 'active' },
     ],
     item: [
       { name: 'Bottle Potion', ammount: 1, description: 'Heal all teammates' },
@@ -211,20 +214,20 @@ export const skillAndItem = [
 ]
 
 
-export function getBarrier (def, hp, tanker = false) {
-    const percentage = 15
-    if (tanker) percentage + 10
-    return Math.ceil((def * percentage / 100) + (hp * percentage / 100))
+export function getBarrier(def, hp, tanker = false) {
+  const percentage = 15
+  if (tanker) percentage + 10
+  return Math.ceil((def * percentage / 100) + (hp * percentage / 100))
 }
 
 //? Item
 
-export function GuardiansElixir (myDeck) {
-  let barrier = [] 
+export function GuardiansElixir(myDeck) {
+  let barrier = []
   myDeck.forEach(el => barrier.push(getBarrier(el.def, el.hp, el.role)))
   return barrier
 }
 
-export function heal (hp) {
-  return Math.floor(hp * (12/100))
+export function heal(hp) {
+  return Math.floor(hp * (12 / 100))
 }

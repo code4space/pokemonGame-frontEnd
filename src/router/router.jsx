@@ -42,11 +42,11 @@ const router = createBrowserRouter([
                             },
                             {
                                 path: '/pvp/win',
-                                element: <PreparePvP/>
+                                element: <WinPage/>
                             },
                             {
                                 path: '/pvp/lose',
-                                element: <PreparePvP/>
+                                element: <LosePage/>
                             },
                         ]
                     },
