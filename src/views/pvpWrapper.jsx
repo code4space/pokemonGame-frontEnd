@@ -45,7 +45,7 @@ const PvPWrapper = () => {
             setRoomInfo(roomName);
         }
 
-        newSocket.emit('joinRoom');
+        newSocket.emit('joinRoom', { name: username });
         newSocket.on('roomInfo', socketRoomInfo);
 
         newSocket.on("disconnect", () => {
@@ -60,20 +60,24 @@ const PvPWrapper = () => {
 
     useEffect(() => {
         if (!socket) return;
+
         function opponentName({ opponentName }) {
-            if (username !== opponentName) setOpponent(prevData => ({ ...prevData, username: opponentName }))
-            setOpponent(prevData => {
-                if (!prevData.username) {
-                    socket.emit('opponent-name', { room: roomInfo, username })
-                }
-                return { ...prevData }
-            })
+            setOpponent(prevData => ({ ...prevData, username: opponentName }))
         }
-        socket.on('opponent-name', opponentName)
+
+        // Listen for opponent-name only once to set the opponent's name when received.
+        socket.once('opponent-name', opponentName);
+
+        // Emit opponent-name message if the opponent's name is not set.
+        if (!opponent.username) {
+            socket.emit('opponent-name', { room: roomInfo, username });
+        }
+
         return () => {
             socket.off('opponent-name', opponentName)
         }
-    }, [roomInfo])
+    }, [roomInfo, socket, opponent.username])
+
 
     console.log(opponent)
 
