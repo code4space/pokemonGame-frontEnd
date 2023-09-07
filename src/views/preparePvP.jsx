@@ -150,11 +150,11 @@ function PreparePvP({ deck }) {
     else return (
         <div className="lobby">
             <div className="collection-title" style={{ height: 'auto', fontSize: '13px' }}>
-                <h1 className="title-deck">Enemy Deck</h1>
+                <p className="title-deck">{opponent.username}'s Deck</p>
             </div>
             <CollectionBox pokemon={opponent.deck} handleButtonDetail={handleButtonDetailOpponent} deck={true} borderColor={opponent.ready ? '#29c94f' : ''} />
             <div className="collection-title" style={{ height: 'auto', marginTop: '10px', fontSize: '13px' }}>
-                <h1 className="title-deck">Your Deck</h1>
+                <p className="title-deck">Your Deck</p>
             </div>
             <CollectionBox pokemon={myDeck} handleButtonDetail={handleButtonDetail} deck={true} borderColor={ready ? '#29c94f' : ''} />
             <CollectionBox pokemon={pokemon} handleButtonDetail={handleButtonDetail} height={'180px'} />

@@ -90,9 +90,17 @@ function TopNavbar({ isHard, setIsHard }) {
         }
     }
 
+    function whichMusic() {
+        const pathName = location.pathname
+        const turnOff = ['/play/lose', '/play/win', '/pvp/win', '/pvp/lose']
+        if (turnOff.some(el => el === pathName)) return;
+        else if (pathName === '/play' || pathName === '/pvp') return <BattleTheme activeMusic={activeMusic} />
+        else return <PokemonTheme2 activeMusic={activeMusic} />
+    }
+
     return (
         <>
-            { (location.pathname !== '/play/lose' && location.pathname !== '/play/win') && (location.pathname !== '/play' ? <PokemonTheme2 activeMusic={activeMusic} /> : <BattleTheme activeMusic={activeMusic} />)}
+            {whichMusic()}
             <div className="top-icon-left">
                 {location.pathname !== '/' ? <button className="back" onClick={back}>Back</button> : <button className="back difficulty" onClick={difficulty} style={isHard ? { animation: 'outer-glow 3s infinite', backgroundColor: 'rgb(245, 48, 48)' } : { backgroundColor: 'rgb(72, 236, 81)' }}>DIFFICULTY</button>}
             </div>
@@ -128,7 +136,7 @@ function TopNavbar({ isHard, setIsHard }) {
                 <>
                     {location.pathname === '/' && <span onClick={handleButtonCredit} className="credit-bottom">Credits</span>}
                     <div className="top-icon-right">
-                    <button className={activeMusic ? "music-icon music-active" : "music-icon"} onClick={musicButton}>Music</button>
+                        <button className={activeMusic ? "music-icon music-active" : "music-icon"} onClick={musicButton}>Music</button>
                         <button className="logout" onClick={logout}>Logout</button>
                     </div>
                 </>

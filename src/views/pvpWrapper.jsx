@@ -25,10 +25,8 @@ const PvPWrapper = () => {
         const newSocket = io.connect(baseUrl);
         setSocket(newSocket);
         dispatch(emptyingTheDeck())
-        
-        newSocket.emit('joinRoom');
 
-        newSocket.on('roomInfo', ({ roomName, users, disconnect, username: opponentName }) => {
+        function socketRoomInfo({ roomName, users, disconnect, username: opponentName }) {
             if (users === 2) {
                 newSocket.emit('opponent-name', { room: roomName, username })
                 setIsFind(false)
@@ -45,11 +43,10 @@ const PvPWrapper = () => {
                 });
             }
             setRoomInfo(roomName);
-        });
+        }
 
-        newSocket.on('opponent-name', ({ opponentName }) => {
-            if (username !== opponentName) setOpponent(prevData => ({ ...prevData, username: opponentName }))
-        })
+        newSocket.emit('joinRoom');
+        newSocket.on('roomInfo', socketRoomInfo);
 
         newSocket.on("disconnect", () => {
             navigate("/");
@@ -57,11 +54,31 @@ const PvPWrapper = () => {
 
         return () => {
             newSocket.disconnect();
+            newSocket.off('roomInfo', roomInfo);
         };
     }, []);
 
+    useEffect(() => {
+        if (!socket) return;
+        function opponentName({ opponentName }) {
+            if (username !== opponentName) setOpponent(prevData => ({ ...prevData, username: opponentName }))
+            setOpponent(prevData => {
+                if (!prevData.username) {
+                    socket.emit('opponent-name', { room: roomInfo, username })
+                }
+                return { ...prevData }
+            })
+        }
+        socket.on('opponent-name', opponentName)
+        return () => {
+            socket.off('opponent-name', opponentName)
+        }
+    }, [roomInfo])
+
+    console.log(opponent)
+
     if (isFind) return <LoadingScreen find={isFind} />
-    return <Outlet context={{ socket, opponent: [opponent, setOpponent], roomInfo }} />
+    return <Outlet context={{ socket, opponent: [opponent, setOpponent], roomInfo, username }} />
 };
 
 export default PvPWrapper;

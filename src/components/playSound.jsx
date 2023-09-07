@@ -50,7 +50,7 @@ export const hitSound = () => {
 
 export const healingSound = () => {
     const audio = new Audio(heal_sound);
-    audio.volume = 0.4;
+    audio.volume = 0.8;
     audio.play();
 };
 
@@ -89,6 +89,6 @@ export const PokemonTheme2 = (playState) => {
 };
 
 export const battleSound = (playState) => {
-    const volume = 0.09
+    const volume = 0.07
     return <ReactAudioPlayer src={battleMusic} autoPlay loop volume={volume} muted={!playState} />
 };

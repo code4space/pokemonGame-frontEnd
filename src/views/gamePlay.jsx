@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../assets/css/gamePlay.css'
 import shadow from '../assets/icon/shadow.png'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { clickSound1, deathSound, growSound, healingSound, hitSound, roarSound } from '../components/playSound'
 import axios from 'axios'

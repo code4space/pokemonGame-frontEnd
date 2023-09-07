@@ -228,6 +228,6 @@ export function GuardiansElixir(myDeck) {
   return barrier
 }
 
-export function heal(hp) {
-  return Math.floor(hp * (12 / 100))
+export function heal(hp, percentage) {
+  return Math.floor(hp * ((percentage || 12) / 100))
 }

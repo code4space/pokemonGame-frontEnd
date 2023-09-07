@@ -21,3 +21,7 @@ item :
 -- Guardian's Elixir : Provide all teammates with a barrier
 
 name : {role: 'Tanker', ability: ['Taunt], item: [{name, ammount}, {}]}
+
+// pvp rule
+misal kalah dapet ultraball 3 draw 3
+
