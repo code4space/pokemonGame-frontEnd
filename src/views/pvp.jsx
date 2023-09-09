@@ -6,12 +6,13 @@ import { useEffect, useState } from "react"
 import shadow from '../assets/icon/shadow.png'
 import LoadingScreen from "../components/loading"
 import { damageDealt, getBarrier, heal, skillAndItem } from "../constant/helper"
-import { clickSound1, healingSound, hitSound } from "../components/playSound"
+import { clickSound1, healingSound, hitSound, roarSound } from "../components/playSound"
 import InstructionPage from "../components/instruction"
 import bookIcon from '../assets/icon/book.png'
 import HealingAnimation from "../components/healingAnimation"
 import targetIcon from '../assets/icon/target.png'
 import Select from "../components/selectAnimation"
+import RoaringAnimation from "../components/roaringAnimation"
 
 
 // In-game Functions
@@ -58,6 +59,7 @@ export default function PagePvP() {
     healAnimation: false,
     targetHeal: null,
     healAll: false,
+    tauntingAnimation: false,
   })
   const [menu, setMenu] = useState({
     isMenu: true,
@@ -74,7 +76,8 @@ export default function PagePvP() {
   const [itemAbility, setItemAblity] = useState({
     focusSash: [],
     smokeBomb: [],
-    dopping: []
+    dopping: [],
+    taunt: []
   })
 
   // pokemon info
@@ -119,7 +122,8 @@ export default function PagePvP() {
       if (opponent.username !== name) {
         if (turn.index + 1 >= Object.keys(opponentPokemon).length) {
           setTurn({ isMyTurn: true, index: 0 })
-          cleanBarrier(pokemon, setMyPokemon)
+          cleanBarrier(true)
+          cleanItemAbility(username)
         }
         else setTurn(prevState => ({ ...prevState, index: prevState.index + 1 }))
       }
@@ -133,6 +137,11 @@ export default function PagePvP() {
       if (opponent.username !== name) useItem(itemName)
     }
 
+    function handleUseAbility({ name, abilityName, type }) {
+      console.log(name, abilityName, type)
+      if (opponent.username !== name) useAbility({ name: abilityName, type })
+    }
+
     function handleHealingTarget({ name, target }) {
       if (opponent.username !== name) healingTarget(target)
     }
@@ -140,6 +149,7 @@ export default function PagePvP() {
     socket.on('add-turn', handleAddTurn);
     socket.on('attack', handleAttack)
     socket.on('use-item', handleUseItem)
+    socket.on('use-ability', handleUseAbility)
     socket.on('healing-target', handleHealingTarget)
 
     // Clean up the event listener when the component unmounts
@@ -147,6 +157,7 @@ export default function PagePvP() {
       socket.off('add-turn', handleAddTurn);
       socket.off('attack', handleAttack)
       socket.off('use-item', handleUseItem)
+      socket.off('use-ability', handleUseAbility)
       socket.off('healing-target', handleHealingTarget)
     };
   }, [opponentPokemon, turn, myPokemon])
@@ -187,7 +198,8 @@ export default function PagePvP() {
   function setNextTurn(pokemon) {
     if (turn.index + 1 >= Object.keys(myPokemon).length) {
       setTurn({ isMyTurn: false, index: 0 })
-      cleanBarrier(pokemon, setOpponentPokemon)
+      cleanBarrier(false)
+      cleanItemAbility(opponent.username)
     } else {
       setTurn(prevState => ({ ...prevState, index: prevState.index + 1 }))
     }
@@ -195,19 +207,49 @@ export default function PagePvP() {
     socket.emit('add-turn', { room, name: opponent.username, pokemon })
   }
 
-  function cleanBarrier(pokemon, setPokemon) {
-    const updatedMyPokemon = { ...pokemon };
-
-    for (const pokemonName in updatedMyPokemon) {
-      if (updatedMyPokemon.hasOwnProperty(pokemonName)) {
-        updatedMyPokemon[pokemonName] = {
-          ...updatedMyPokemon[pokemonName],
-          barrier: 0,
-        };
+  function cleanItemAbility(user) {
+    let copy = { ...itemAbility }
+    for (let key in copy) {
+      let value = [...copy[key]]
+      if (!value.length) continue
+      if (key === 'focusSash' || key === 'taunt') value = value.filter(el => el.user !== user)
+      else if (key === 'dopping') {
+        value = value.filter(el => {
+          const condition = (el.user !== user) || (el.round < 1)
+          if (!condition) {
+            const isMe = user === username
+            const detail = getDetailByName(isMe ? deck : opponent.deck, el.name)
+            const setState = isMe ? setMyPokemon : setOpponentPokemon
+            setState(prevState => {
+              const pokemon = prevState[el.name]
+              pokemon.def = detail.def
+              pokemon.attack = detail.attack
+              return { ...prevState, [el.name]: pokemon }
+            })
+          }
+          return condition
+        })
+        value = value.map(el => ({ ...el, round: el.user === user ? el.round + 1 : el.round }))
       }
+      copy[key] = value
     }
 
-    setPokemon(updatedMyPokemon);
+    setItemAblity(copy)
+  }
+
+  function cleanBarrier(isMe) {
+    const setState = isMe ? setMyPokemon : setOpponentPokemon
+    setState(prevState => {
+      for (const pokemonName in prevState) {
+        if (prevState.hasOwnProperty(pokemonName)) {
+          prevState[pokemonName] = {
+            ...prevState[pokemonName],
+            barrier: 0,
+          };
+        }
+      }
+      return { ...prevState }
+    });
   }
 
   function doesHeal(turn, name) {
@@ -227,6 +269,10 @@ export default function PagePvP() {
 
   function setActiveMenu(option) {
     clickSound1()
+    if (option === 'attackMenu') {
+      const taunting = itemAbility.taunt.find(el => el.user === opponent.username)
+      if (taunting) return attackingTarget(taunting.name, true)
+    }
     setMenu({ ...menu, [option]: true, isMenu: false })
   }
 
@@ -268,7 +314,7 @@ export default function PagePvP() {
   }
 
   function attackingTarget(target, toOpponent, damage) {
-    setMenu({ ...menu, attackMenu: false, isMenu: true })
+    setMenu(prevState => ({ ...prevState, attackMenu: false, isMenu: true }))
     hitSound()
 
     let attacker = toOpponent ? { ...myPokemon[getName(myPokemon, turn)] } : { ...opponentPokemon[getName(opponentPokemon, turn)] }
@@ -284,13 +330,16 @@ export default function PagePvP() {
     const timer = setTimeout(async () => {
       setHitEffect({ damage: 0, effectiveness: null, target: undefined })
       defender.barrier -= dd.damage
+      const isZombie = itemAbility.focusSash.find(el => (el.name === target) && (el.user === toOpponent ? opponent.username : username))
       if (defender.barrier < 0) {
         defender.hp += defender.barrier
         defender.barrier = 0
+        if (isZombie && defender.hp <= 0) defender.hp = 1
       }
+
       if (defender.hp > 0) { //? when pokemon still alive
         if (toOpponent) {
-          setOpponentPokemon({ ...opponentPokemon, [target]: defender })
+          setOpponentPokemon(prevState => ({ ...prevState, [target]: defender }))
           setNextTurn({ ...opponentPokemon, [target]: defender })
         }
         else setMyPokemon(prevState => ({ ...prevState, [target]: defender }))
@@ -308,10 +357,22 @@ export default function PagePvP() {
         else {
           const copy = { ...myPokemon }
           delete copy[target]
+
           //? is lose
           if (!Object.keys(copy).length) navigate('/pvp/lose', { state: { difficulty: 'PvP' } })
           setMyPokemon(copy)
         }
+
+        // clean itemAbility dead pokemon
+        setItemAblity(prevState => {
+          let itemAbilityCopy = { ...prevState }
+          for (const key in prevState) {
+            let copy = [...prevState[key]]
+            copy = copy.filter(({ name, user }) => (name !== target) && (user !== toOpponent ? opponent.username : username))
+            itemAbilityCopy = { ...itemAbilityCopy, [key]: copy }
+          }
+          return itemAbilityCopy
+        })
       }
     }, 800);
 
@@ -322,16 +383,10 @@ export default function PagePvP() {
     healingSound()
     setMenu({ ...menu, healMenu: false, isMenu: true })
 
-    let pokemon, detail
-    if (turn.isMyTurn) {
-      socket.emit('healing-target', { room, name: opponent.username, target })
-      pokemon = { ...myPokemon[target] }
-      detail = getDetailByName(deck, target)
-    }
-    else {
-      pokemon = { ...opponentPokemon[target] }
-      detail = getDetailByName(opponent.deck, target)
-    }
+    let pokemon = turn.isMyTurn ? { ...myPokemon[target] } : { ...opponentPokemon[target] },
+      detail = turn.isMyTurn ? getDetailByName(deck, target) : getDetailByName(opponent.deck, target)
+
+    if (turn.isMyTurn) socket.emit('healing-target', { room, name: opponent.username, target })
 
     let healAmmount = heal(turn.isMyTurn ? myPokemon[getName(myPokemon, turn)].hp : opponentPokemon[getName(opponentPokemon, turn)].hp, 22)
     pokemon.hp += healAmmount
@@ -341,30 +396,19 @@ export default function PagePvP() {
     else setOpponentPokemon({ ...opponentPokemon, [detail.name]: pokemon })
 
     // Effect
-    setOtherEffect({ ...otherEffect, healAnimation: true, targetHeal: target })
-    setHitEffect({ ...hitEffect, effectiveness: 'healing' })
+    setOtherEffect(prevState => ({ ...prevState, tauntingAnimation: true }))
     setTimeout(() => {
-      setOtherEffect({ ...otherEffect, healAnimation: false, targetHeal: null })
-      setHitEffect({ ...hitEffect, effectiveness: null })
+      setOtherEffect(prevState => ({ ...prevState, tauntingAnimation: false }))
       if (turn.isMyTurn) setNextTurn(opponentPokemon)
     }, 1500)
   }
 
   function useItem(itemName) {
     back('itemMenu')
-    let pokemons, details, pokemon, detail
-    if (turn.isMyTurn) {
-      pokemons = { ...myPokemon }
-      details = deck
-      pokemon = { ...myPokemon[getName(myPokemon, turn)] }
-      detail = getDetail(deck, myPokemon, turn)
-    }
-    else {
-      pokemons = { ...opponentPokemon }
-      details = opponent.deck
-      pokemon = { ...opponentPokemon[getName(opponentPokemon, turn)] }
-      detail = getDetail(opponent.deck, opponentPokemon, turn)
-    }
+    let pokemons = turn.isMyTurn ? { ...myPokemon } : { ...opponentPokemon },
+      details = turn.isMyTurn ? deck : opponent.deck,
+      pokemon = turn.isMyTurn ? { ...myPokemon[getName(myPokemon, turn)] } : { ...opponentPokemon[getName(opponentPokemon, turn)] },
+      detail = turn.isMyTurn ? getDetail(deck, myPokemon, turn) : getDetail(opponent.deck, opponentPokemon, turn)
 
     if (itemName === 'Bottle Potion') {
       healingSound()
@@ -399,14 +443,28 @@ export default function PagePvP() {
       else setOpponentPokemon(pokemons)
     } else if (itemName === 'Focus Sash') {
       let focusSash = [...itemAbility.focusSash]
-      setItemAblity({ ...itemAbility, focusSash })
-      console.log(detail)
       if (turn.isMyTurn) {
-        focusSash.push({ name: detail.name, user: username })
+        focusSash.push({ name: detail.name, user: username, round: 0 })
         socket.emit("use-item", { name: opponent.username, room, itemName })
       } else {
-        focusSash.push({ name: detail.name, user: opponent.name })
+        focusSash.push({ name: detail.name, user: opponent.username, round: 0 })
       }
+      setItemAblity({ ...itemAbility, focusSash })
+    } else if (itemName === 'Dopping') {
+      let dopping = [...itemAbility.dopping]
+      const defToAttack = Math.ceil(pokemon.def * (40 / 100))
+      pokemon.def -= defToAttack
+      pokemon.attack += defToAttack
+
+      if (turn.isMyTurn) {
+        dopping.push({ name: detail.name, user: username, round: 0 })
+        socket.emit("use-item", { name: opponent.username, room, itemName })
+        pokemons = { ...pokemons, [detail.name]: pokemon }
+      } else {
+        dopping.push({ name: detail.name, user: opponent.username, round: 0 })
+        setOpponentPokemon(prevState => ({ ...prevState, [detail.name]: pokemon }))
+      }
+      setItemAblity(prevState => ({ ...prevState, dopping }))
     }
 
     if (turn.isMyTurn) {
@@ -417,14 +475,36 @@ export default function PagePvP() {
     }
   }
 
-  console.log(itemAbility)
-
   function useAbility({ name, type }) {
     if (type === 'Passive') return;
+    let pokemons = turn.isMyTurn ? { ...myPokemon } : { ...opponentPokemon },
+      details = turn.isMyTurn ? deck : opponent.deck,
+      pokemon = turn.isMyTurn ? { ...myPokemon[getName(myPokemon, turn)] } : { ...opponentPokemon[getName(opponentPokemon, turn)] },
+      detail = turn.isMyTurn ? getDetail(deck, myPokemon, turn) : getDetail(opponent.deck, opponentPokemon, turn)
+
     if (name === 'Heal') {
       return setMenu({ ...menu, healMenu: true, abilityMenu: false })
+    } else if (name === 'Taunt') {
+      roarSound()
+      setMenu(prevState => ({ ...prevState, abilityMenu: false, isMenu: true }))
+
+      let taunt = [...itemAbility.taunt]
+      if (turn.isMyTurn) socket.emit("use-ability", { name: opponent.username, room, abilityName: name, type })
+      taunt.push({ name: detail.name, user: turn.isMyTurn ? username : opponent.username, round: 0 })
+      setItemAblity(prevState => ({ ...prevState, taunt }))
+
+      // Effect
+      setOtherEffect(prevState => ({ ...prevState, tauntingAnimation: true }))
+      setHitEffect(prevState => ({ ...prevState, effectiveness: 'healing' }))
+      setTimeout(() => {
+        setOtherEffect(prevState => ({ ...prevState, tauntingAnimation: false }))
+        setHitEffect(prevState => ({ ...prevState, effectiveness: null }))
+        if (turn.isMyTurn) setNextTurn(opponentPokemon)
+      }, 1500)
     }
   }
+
+  console.log(itemAbility)
 
   // HTML function
   function renderDialogueBox(condition) {
@@ -508,6 +588,7 @@ export default function PagePvP() {
                   <img src={frontView} alt={el + '_img'} style={(hitEffect.target === el && turn.isMyTurn) ? { animation: 'shake 0.4s linear 0s, hitEffect 1s linear 0s' } : null} />
                   {menu.attackMenu && <img src={targetIcon} alt="target_img" className='target' onClick={() => { attackingTarget(el, true) }} />}
                   {doesHeal(!turn.isMyTurn, el)}
+                  {(otherEffect.tauntingAnimation && !turn.isMyTurn && getDetail(opponent.deck, opponentPokemon, turn).name === el) && <RoaringAnimation />}
                   <div className="hp-bar">
                     <p>Hp.</p>
                     <span className="hp">
@@ -533,6 +614,7 @@ export default function PagePvP() {
                 <div className="pokemon-img-ctrl" key={el}>
                   <img src={backView} alt={el + '_img'} style={(hitEffect.target === el && !turn.isMyTurn) ? { animation: 'shake 0.4s linear 0s, hitEffect 1s linear 0s' } : null} />
                   {doesHeal(turn.isMyTurn, el)}
+                  {(otherEffect.tauntingAnimation && turn.isMyTurn && getDetail(deck, myPokemon, turn).name === el) && <RoaringAnimation />}
                   {menu.healMenu && <Select />}
                   <div className="hp-bar">
                     <p>Hp.</p>

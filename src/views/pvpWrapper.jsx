@@ -26,9 +26,22 @@ const PvPWrapper = () => {
         setSocket(newSocket);
         dispatch(emptyingTheDeck())
 
-        function socketRoomInfo({ roomName, users, disconnect, username: opponentName }) {
-            if (users === 2) {
-                newSocket.emit('opponent-name', { room: roomName, username })
+        function socketRoomInfo({ roomName, disconnect, name }) {
+            if (name) {
+                const opponentName = name.find(el => el !== username)
+                setOpponent({ ...opponent, username: opponentName })
+                if (!opponentName) {
+                    newSocket.disconnect();
+                    navigate('/')
+                    Swal.fire({
+                        position: "middle",
+                        icon: "error",
+                        title: "Unexpected Error",
+                        text: 'User may be using the same account or refreshing the page while in-game',
+                        showConfirmButton: true,
+                        timer: 3000,
+                    });
+                }
                 setIsFind(false)
             }
             if (disconnect) {
@@ -57,29 +70,6 @@ const PvPWrapper = () => {
             newSocket.off('roomInfo', roomInfo);
         };
     }, []);
-
-    useEffect(() => {
-        if (!socket) return;
-
-        function opponentName({ opponentName }) {
-            setOpponent(prevData => ({ ...prevData, username: opponentName }))
-        }
-
-        // Listen for opponent-name only once to set the opponent's name when received.
-        socket.once('opponent-name', opponentName);
-
-        // Emit opponent-name message if the opponent's name is not set.
-        if (!opponent.username) {
-            socket.emit('opponent-name', { room: roomInfo, username });
-        }
-
-        return () => {
-            socket.off('opponent-name', opponentName)
-        }
-    }, [roomInfo, socket, opponent.username])
-
-
-    console.log(opponent)
 
     if (isFind) return <LoadingScreen find={isFind} />
     return <Outlet context={{ socket, opponent: [opponent, setOpponent], roomInfo, username }} />
