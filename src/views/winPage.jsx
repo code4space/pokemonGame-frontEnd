@@ -24,7 +24,7 @@ export default function WinPage() {
             setBlink(true)
         }, 5100)
 
-        
+
         dispatch({ type: SET_BATTLE_DECK, payload: [] });
         return () => clearTimeout(timer);
     }, [])
@@ -34,6 +34,45 @@ export default function WinPage() {
         navigate('/')
     }
 
+    function title({ difficulty, opponent }) {
+        switch (difficulty) {
+            case 'PvP':
+                return <div className='win-content pixelated-border'>
+                    <h2>CONGRATULATIONS</h2>
+                    <p>You successfully defeated {opponent} in PvP.</p>
+                    <div className='reward-control'>
+                        <div className='ball-reward'>
+                            <img src={masterBall} alt="pokeball" />
+                            <span>3X</span>
+                        </div>
+                    </div>
+                </div>
+            default:
+                return <div className='win-content pixelated-border'>
+                    <h2>CONGRATS</h2>
+                    <p>You received these rewards after defeating the {difficulty === false ? 'normal' : 'extreme'} difficulty, Your Pokémon in the deck just leveled up by 1!</p>
+                    <div className='reward-control'>
+                        <div className='ball-reward'>
+                            <img src={pokeBall} alt="pokeBall" />
+                            <span>{difficulty === false ? '5' : '3'}X</span>
+                        </div>
+                        <div className='ball-reward'>
+                            <img src={greatBall} alt="greatBall" />
+                            <span>{difficulty === false ? '3' : '4'}X</span>
+                        </div>
+                        <div className='ball-reward'>
+                            <img src={ultraBall} alt="pokeball" />
+                            <span>{difficulty === false ? '1' : '2'}X</span>
+                        </div>
+                        {difficulty && <div className='ball-reward'>
+                            <img src={masterBall} alt="pokeball" />
+                            <span>1X</span>
+                        </div>}
+                    </div>
+                </div>
+        }
+    }
+
     if (!state) {
         return <Navigate to={'/'}></Navigate>;
     }
@@ -41,32 +80,10 @@ export default function WinPage() {
         return (
             <>
                 <div className='black-bg'>
-                    {!blink && <h1>YOU WIN</h1>}
-                    {blink && <>
-                        <div className='win-content pixelated-border'>
-                            <h2>CONGRATS</h2>
-                            <p>Here are your rewards for beating the {state.difficulty === false ? 'normal' : 'extreme'} difficulty, Your Pokémon in the deck just leveled up by 1!</p>
-                            <div className='reward-control'>
-                                <div className='ball-reward'>
-                                    <img src={pokeBall} alt="pokeBall" />
-                                    <span>{state.difficulty === false ? '5' : '3'}X</span>
-                                </div>
-                                <div className='ball-reward'>
-                                    <img src={greatBall} alt="greatBall" />
-                                    <span>{state.difficulty === false ? '3' : '4'}X</span>
-                                </div>
-                                <div className='ball-reward'>
-                                    <img src={ultraBall} alt="pokeball" />
-                                    <span>{state.difficulty === false ? '1' : '2'}X</span>
-                                </div>
-                                {state.difficulty && <div className='ball-reward'>
-                                    <img src={masterBall} alt="pokeball" />
-                                    <span>1X</span>
-                                </div>}
-                            </div>
-                        </div>
+                    {blink ? <>
+                        {title(state)}
                         <button onClick={handleButton}>Home</button>
-                    </>}
+                    </> : <h1>YOU WIN</h1>}
                 </div>
             </>
         )

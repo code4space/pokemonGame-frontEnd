@@ -449,7 +449,7 @@ export default function GamePlayPage() {
             setDopping((prevState) => {
                 return { ...prevState, ...newState };
             });
-        } else if (itemNme === 'Focus Sash') {
+        } else if (itemName === 'Focus Sash') {
             const newState = { [myDeck[turn].name]: { round: 0 } }
             setFocusSash((prevState) => {
                 return { ...prevState, ...newState };

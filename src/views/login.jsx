@@ -29,8 +29,9 @@ export default function LoginPage() {
         if (res.status !== 200) throw new Error("something went wrong");
         return res.data;
       })
-      .then((data) => {
-        localStorage.setItem("access_token", data.access_token);
+      .then(({ access_token, username }) => {
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("username", username);
         navigate("/");
       })
       .catch((error) => {

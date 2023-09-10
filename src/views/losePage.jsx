@@ -19,7 +19,7 @@ export default function LosePage() {
             setBlink(true)
         }, 5100)
 
-        
+
         dispatch({ type: SET_BATTLE_DECK, payload: [] });
         return () => clearTimeout(timer);
     }, [])
@@ -27,6 +27,17 @@ export default function LosePage() {
     function handleButton() {
         clickSound()
         navigate('/')
+    }
+
+    function title({ pokemon, difficulty }) {
+        switch (difficulty) {
+            case false || 'PvP':
+                return 'You lose nothing on this battle'
+            case true:
+                return `${pokemon} Exiled from your Collection`
+            default:
+                break;
+        }
     }
 
     if (!state) {
@@ -37,10 +48,8 @@ export default function LosePage() {
             <>
                 <div className='black-bg'>
                     {blink ?
-                        <><p style={{ color: 'rgb(233, 95, 95)' }}>{state.difficulty ? `${state.pokemon} Exiled from your Collection` : 'You lose nothing on this challange'}</p>
-                            <p>Oops... Apologies for the loss. Keep striving, don't let it discourage you.
-                                Remember, failure in a game is not the end, but rather a chance to learn and grow.
-                            </p>
+                        <><p style={{ color: 'rgb(233, 95, 95)' }}>{title(state)}</p>
+                            <p>Improve your Pokémon's level, evolve them, and increase their star</p>
                             <button className='logout' onClick={handleButton}>Home</button></> : <h1>YOU LOSE</h1>}
                 </div>
             </>

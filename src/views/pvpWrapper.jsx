@@ -18,7 +18,7 @@ const PvPWrapper = () => {
     })
 
     const navigate = useNavigate();
-    const username = useSelector((state) => state.UserReducer.username)
+    const username = localStorage.getItem('username')
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -70,6 +70,8 @@ const PvPWrapper = () => {
             newSocket.off('roomInfo', roomInfo);
         };
     }, []);
+
+    console.log(roomInfo, username)
 
     if (isFind) return <LoadingScreen find={isFind} />
     return <Outlet context={{ socket, opponent: [opponent, setOpponent], roomInfo, username }} />
