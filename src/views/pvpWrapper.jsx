@@ -71,8 +71,6 @@ const PvPWrapper = () => {
         };
     }, []);
 
-    console.log(roomInfo, username)
-
     if (isFind) return <LoadingScreen find={isFind} />
     return <Outlet context={{ socket, opponent: [opponent, setOpponent], roomInfo, username }} />
 };

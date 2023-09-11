@@ -126,8 +126,6 @@ export default function PagePvP() {
   useEffect(() => {
     const handleAddTurn = ({ name, pokemon }) => {
       if (opponent.username !== name) {
-        console.log(itemAbility)
-        console.log(getName(opponentPokemon, turn), itemAbility.ejectButton, turn.index, turn.isMyTurn)
         if (itemAbility.ejectButton === getName(opponentPokemon, turn)) setItemAblity(prevState => ({ ...prevState, ejectButton: '' }))
         else if (turn.index + 1 >= Object.keys(opponentPokemon).length) {
           setTurn({ isMyTurn: true, index: 0 })
@@ -135,7 +133,6 @@ export default function PagePvP() {
           cleanItemAbility(username)
         }
         else {
-          console.log('masuk')
           setTurn(prevState => ({ ...prevState, index: prevState.index + 1 }))
         }
       }
@@ -539,9 +536,9 @@ export default function PagePvP() {
     }
 
     if (turn.isMyTurn) {
-      // let item = [...pokemons[detail.name].item]
-      // item.splice(item.findIndex(el => el.name === itemName), 1)
-      // pokemons[detail.name] = { ...pokemons[detail.name], item }
+      let item = [...pokemons[detail.name].item]
+      item.splice(item.findIndex(el => el.name === itemName), 1)
+      pokemons[detail.name] = { ...pokemons[detail.name], item }
       setMyPokemon(pokemons)
     }
   }
@@ -645,8 +642,6 @@ export default function PagePvP() {
 
     return result[condition]
   }
-
-  console.log(turn)
 
   if (!myPokemon || !opponentPokemon) return <LoadingScreen />
   return (
